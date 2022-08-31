@@ -1,11 +1,6 @@
 /** This file get bundled for injection. So only type imports are allowed here */
 import type { Data, ProcessedVideoData } from '../common/dataTypes';
-import type {
-	NativeFeedbackSentEvent,
-	VideoBatchRecordedEvent,
-	VideoViewedEvent,
-	PagePingEvent,
-} from '../common/messages';
+import type { VideoBatchRecordedEvent, VideoViewedEvent, PagePingEvent } from '../common/messages';
 
 export enum VideoThumbnailType {
 	SidebarRecommendation = 'SidebarRecommendation',
@@ -13,36 +8,9 @@ export enum VideoThumbnailType {
 	Other = 'OtherRecommendation',
 }
 
-export enum FeedbackType {
-	Dislike = 'dislike',
-	NotInterested = 'not_interested',
-	NoRecommend = 'dont_recommend',
-	RemoveFromHistory = 'remove_from_history',
-}
-
 export enum EventType {
-	RegretVideo = 'RegretVideo',
-	AuthRecorded = 'AuthRecorded',
-	SendVideoFeedback = 'SendVideoFeedback',
 	VideoBatchRecorded = 'VideoBatchRecorded',
-	RegretDetailsSubmitted = 'RegretDetailsSubmitted',
 	VideoViewed = 'VideoViewed',
-	NativeFeedbackSent = 'NativeFeedbackSent',
-	VideoRegretted = 'VideoRegretted',
-}
-
-const feedbackTypeByIcon = {
-	'yt-icons:not_interested': FeedbackType.NotInterested,
-	'yt-icons:remove-circle-outline': FeedbackType.NoRecommend,
-	'yt-icons:close': FeedbackType.RemoveFromHistory,
-};
-
-enum PageLocation {
-	Home,
-	Explore,
-	Watch,
-	History,
-	Other,
 }
 
 const loggingOn = process.env.ENABLE_PAGE_LOGS === 'true';
@@ -54,7 +22,6 @@ let lastLocation = window.location.href;
 const seenVideosOnPage = new Set();
 
 let lastViewedVideo: string | null = null;
-let pageClickListenerInjected = false;
 
 function postMessage(message: any) {
 	window.postMessage(message, window.location.origin);
@@ -210,116 +177,7 @@ function parseMainVideoData(): ProcessedVideoData | void {
 	return { id, title, length, views, channel, tokens, seenAt, description };
 }
 
-/** Check if click event is on an untoggled "Dislike" button item */
-function isDislikeButtonClick(eventPath: EventTarget[]): boolean {
-	const data = eventPath.find(
-		(v: any) => v.tagName === 'YTD-TOGGLE-BUTTON-RENDERER' && v.__data.buttonIcon === 'yt-icons:dislike',
-	) as any;
-	const isToggled = !!data?.__data?.data?.isToggled;
-	return isToggled;
-}
-
-/** Check if click event is a YT "not-interested", "don't recommend", "remove from history" */
-function getFeedbackActionType(eventPath: EventTarget[]): FeedbackType | null {
-	const data = eventPath.map((v: any) => v?.__data).find((v: any) => v?.data?.serviceEndpoint) as any;
-	if (!data) {
-		return;
-	}
-	const icon = data.icon || data.buttonIcon;
-	if (!(icon in feedbackTypeByIcon)) {
-		return;
-	}
-	const feedbackType = feedbackTypeByIcon[data.icon || data.buttonIcon];
-	return feedbackType;
-}
-
-/** Check if event is a click on a YT context menu opener. Can have false-positives. */
-function isContextMenuClick(eventPath: EventTarget[]) {
-	const element = eventPath[0] as any;
-	return element?.__data?.icon === 'yt-icons:more_vert';
-}
-
-function getContextMenuClickVideo(eventPath: EventTarget[]): string | undefined {
-	const gridElement = eventPath.find(
-		(e: any) => e.tagName === 'YTD-COMPACT-VIDEO-RENDERER' || e.tagName === 'YTD-RICH-GRID-MEDIA',
-	) as any;
-	if (!gridElement) {
-		log('context menu without parent grid element, skipping');
-	}
-	const videoId = gridElement?.__data?.data?.videoId;
-	return videoId;
-}
-
-function getButtonClickVideo(eventPath: EventTarget[]): string | undefined {
-	const gridElement = eventPath.find((e: any) => e.tagName === 'YTD-VIDEO-RENDERER') as any;
-	if (!gridElement) {
-		log('button click without parent grid element, skipping');
-	}
-	const videoId = gridElement?.__data?.data?.videoId;
-	return videoId;
-}
-
-function getPageLocation(): PageLocation {
-	const { pathname } = window.location;
-	switch (pathname) {
-		case '/':
-			return PageLocation.Home;
-		case '/feed/explore':
-			return PageLocation.Explore;
-		case '/feed/history':
-			return PageLocation.History;
-		case '/watch':
-			return PageLocation.Watch;
-		default:
-			return PageLocation.Other;
-	}
-}
-
-/** Get currently played video id */
-const getMainVideoId = () => document.getElementsByTagName('ytd-watch-flexy')[0].getAttribute('video-id');
-
-function injectPageClickListener() {
-	/** We store the relevant video id for context menu clicks to determine to which video a context action relates */
-	let videoIdContext;
-	const handlePageClick = function (e) {
-		const location = getPageLocation();
-		const eventPath = e.composedPath();
-		const contextMenuClick = isContextMenuClick(eventPath);
-		const dislikeMenuClick = isDislikeButtonClick(eventPath);
-		log('dislikeMenuClick=', dislikeMenuClick);
-		if (dislikeMenuClick) {
-			const videoId = getMainVideoId();
-			postMessage({
-				type: EventType.NativeFeedbackSent,
-				videoId,
-				feedbackType: FeedbackType.Dislike,
-			} as NativeFeedbackSentEvent);
-			return;
-		}
-		log('contextMenuClick=', contextMenuClick);
-		if (contextMenuClick) {
-			videoIdContext = getContextMenuClickVideo(eventPath);
-			log(videoIdContext);
-			return;
-		}
-		const feedbackType = getFeedbackActionType(eventPath);
-		if (!feedbackType) return;
-
-		let videoId = videoIdContext;
-		if (location === PageLocation.History) {
-			videoId = getButtonClickVideo(eventPath);
-		}
-		postMessage({ type: EventType.NativeFeedbackSent, videoId, feedbackType } as NativeFeedbackSentEvent);
-	};
-	document.addEventListener('click', handlePageClick, false);
-}
-
 function onPollEvent({ onboardingCompleted, dataCollectionEnabled }: PagePingEvent) {
-	if (onboardingCompleted && dataCollectionEnabled && !pageClickListenerInjected) {
-		injectPageClickListener();
-		pageClickListenerInjected = true;
-	}
-
 	if (onboardingCompleted && dataCollectionEnabled) {
 		parseVideosOnPage();
 	}

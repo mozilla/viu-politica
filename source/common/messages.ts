@@ -9,7 +9,6 @@ export enum EventType {
 	VideoBatchRecorded = 'VideoBatchRecorded',
 	RegretDetailsSubmitted = 'RegretDetailsSubmitted',
 	VideoViewed = 'VideoViewed',
-	NativeFeedbackSent = 'NativeFeedbackSent',
 	VideoRegretted = 'VideoRegretted',
 }
 
@@ -43,12 +42,6 @@ export type VideoBatchRecordedEvent = {
 	data: ProcessedVideoData[];
 };
 
-export type NativeFeedbackSentEvent = {
-	type: EventType.NativeFeedbackSent;
-	feedbackType: FeedbackType;
-	videoId: string;
-};
-
 export type RegretVideoEvent = {
 	type: EventType.RegretVideo;
 	videoId: string;
@@ -67,7 +60,6 @@ export type Message =
 	| VideoBatchRecordedEvent
 	| RegretVideoEvent
 	| VideoViewedEvent
-	| NativeFeedbackSentEvent
 	| RegretDetailsSubmittedEvent;
 
 export type PagePingEvent = {

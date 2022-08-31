@@ -75,7 +75,7 @@ async function injectScript() {
 
 /** Handles messages from injected page and forwards them to background page */
 const onPageMessage = (event: MessageEvent) => {
-	const allowedMessageTypes = [EventType.VideoViewed, EventType.VideoBatchRecorded, EventType.NativeFeedbackSent];
+	const allowedMessageTypes = [EventType.VideoViewed, EventType.VideoBatchRecorded];
 	const isAllowedMessage = allowedMessageTypes.includes(event.data.type as EventType);
 	const isSameOrigin = event.origin === window.location.origin;
 	if (!isSameOrigin || !isAllowedMessage) {

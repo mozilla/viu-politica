@@ -5,7 +5,6 @@ import {
 	AuthRecordedEvent,
 	EventType,
 	Message,
-	NativeFeedbackSentEvent,
 	RegretDetailsSubmittedEvent,
 	RegretVideoEvent,
 	VideoBatchRecordedEvent,
@@ -246,30 +245,9 @@ export class BackgroundScript {
 				return this.onRegretDetailsSubmitted(message, tabId);
 			}
 
-			if (message.type === EventType.NativeFeedbackSent) {
-				return this.onNativeFeedbackSent(message, tabId);
-			}
-
 			if (message.type === EventType.RegretVideo) {
 				return this.onRegretVideoEvent(message, tabId);
 			}
-		});
-	}
-
-	private async onNativeFeedbackSent(message: NativeFeedbackSentEvent, tabId: number) {
-		if (await this.dataCollectionDisabled()) {
-			return;
-		}
-		const video = this.videoIndex[message.videoId];
-		const videoDataId = recordVideoData(video ? video : { id: message.videoId });
-		nativeUiInteraction.record({
-			feedback_type: message.feedbackType,
-			video_data_id: videoDataId,
-		});
-		mainEventsPing.submit();
-		return this.pushEvent(EventType.NativeFeedbackSent, message.feedbackType, tabId, {
-			videoId: message.videoId,
-			feedbackType: message.feedbackType,
 		});
 	}
 
