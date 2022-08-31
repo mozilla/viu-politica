@@ -5,9 +5,9 @@ import '../common/photon-components-web/attributes/index.css';
 import '../common/tailwind.css';
 import { YourPrivacy } from './inc/YourPrivacy';
 import Checkbox from '../common/photon-components-web/photon-components/Checkbox';
-import { installationId, useErrorReportingToggle } from '../common/common';
+import { useErrorReportingToggle } from '../common/common';
 import { getBackgroundScript } from '../common/helpers';
-import { experimentGroupsUrl, privacyNoticeUrl, surveyUrl } from '../common/links';
+import { experimentGroupsUrl, privacyNoticeUrl } from '../common/links';
 import { localStorageKeys, useExtensionState } from '../common/storage';
 import classNames from 'classnames';
 
@@ -16,20 +16,11 @@ export function GetStartedFlow() {
 	const [submitted, setSubmitted] = useExtensionState(localStorageKeys.onboardingCompleted, false);
 	const [experimentOptedIn, setExperimentOptIn] = useExtensionState(localStorageKeys.experimentOptedIn, false);
 
-	const onSurveyClick = useCallback(async () => {
-		const bg = await getBackgroundScript();
-		const installationIdValue = await installationId.acquire();
-		const personalSurveyUrl = `${surveyUrl}#regretsreporter=${installationIdValue}`;
-		await bg.onSurveyClick();
-		window.open(personalSurveyUrl, '_blank');
-	}, []);
-
 	const onSubmit = useCallback(async () => {
 		setSubmitted(true);
 		const bg = await getBackgroundScript();
 		await bg.onOnboardingCompleted(experimentOptedIn);
 		await bg.toggleErrorReporting(enableErrorReporting);
-		await bg.updateBadgeIcon();
 	}, [experimentOptedIn, enableErrorReporting]);
 
 	const hideWelcomeSection = window.location.hash === '#active-user';

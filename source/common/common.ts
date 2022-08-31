@@ -4,7 +4,6 @@ import { EventType, SendVideoFeedbackEvent } from './messages';
 import { localStorageKeys, StorageValue } from './storage';
 import { useEffect, useState } from 'react';
 import OnInstalledReason = Runtime.OnInstalledReason;
-import { useAsync } from './helpers';
 
 /** Youtube feedback type sent */
 export enum FeedbackType {
@@ -94,10 +93,6 @@ export const feedbackUiVariant = new StorageValue<FeedbackUiVariant>(
 
 /** Last extension installation trigger: install, update or browser_update */
 export const installReason = new StorageValue<OnInstalledReason>(localStorageKeys.installedAsUpdate, () => 'install');
-
-export const surveyReminderDate = new StorageValue<number | null>(localStorageKeys.surveyReminderDate, () => null);
-
-export const allSurveysCompleted = new StorageValue<boolean>(localStorageKeys.allSurveysCompleted, () => false);
 
 export const onboardingCompleted = new StorageValue<boolean>(localStorageKeys.onboardingCompleted, () => false);
 

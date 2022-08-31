@@ -1,39 +1,12 @@
 import * as React from 'react';
 import '../common/tailwind.css';
-import { experimentGroupsUrl, onboardingUrl, reminderSurveyUrl, surveyUrl } from '../common/links';
-import { allSurveysCompleted, installationId, installReason, surveyReminderDate } from '../common/common';
+import { experimentGroupsUrl, onboardingUrl } from '../common/links';
+import { installReason } from '../common/common';
 import { localStorageKeys, useExtensionState } from '../common/storage';
-import { useCallback } from 'react';
-import { getBackgroundScript } from '../common/helpers';
 export function Main() {
 	const installReasonValue = installReason.use();
 	const [onboardingCompleted] = useExtensionState(localStorageKeys.onboardingCompleted, false);
 
-	const surveyDate = surveyReminderDate.use();
-	const secondSurveyCompleted = allSurveysCompleted.use();
-	const showSurveyReminder = !secondSurveyCompleted && surveyDate && +Date.now() >= surveyDate;
-
-	const onReminderSurveyClick = useCallback(async () => {
-		const installationIdValue = await installationId.acquire();
-		const personalSurveyUrl = `${reminderSurveyUrl}#regretsreporter=${installationIdValue}`;
-		const bg = await getBackgroundScript();
-		await bg.onReminderSurveyClick();
-		window.open(personalSurveyUrl, '_blank');
-	}, []);
-
-	if (showSurveyReminder) {
-		return (
-			<div className="m-3 text-sm">
-				<div className="font-bold mb-2">Help us learn more about your experience.</div>
-				Are you interested in sharing more about your YouTube experience with Mozilla? Please{' '}
-				<a onClick={onReminderSurveyClick} className="underline text-red-70 cursor-pointer" rel="noreferrer">
-					click here
-				</a>{' '}
-				to complete a survey that will help us better understand how you are using YouTube’s user control mechanisms.
-				Your responses will help power further Mozilla research into YouTube recommendations.
-			</div>
-		);
-	}
 	if (!onboardingCompleted) {
 		if (installReasonValue === 'install') {
 			return (

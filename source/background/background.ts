@@ -12,7 +12,6 @@ import {
 } from '../common/messages';
 import { ProcessedEvent, ProcessedVideoData, VideoData } from '../common/dataTypes';
 import {
-	allSurveysCompleted as allSurveysCompletedValue,
 	dispatchEventToTab,
 	errorReportingEnabled,
 	ExperimentArm,
@@ -22,13 +21,11 @@ import {
 	FeedbackUiVariant,
 	installationId,
 	installReason,
-	onboardingCompleted as onboardingCompletedValue,
-	surveyReminderDate,
 	videosPlayedSet,
 } from '../common/common';
 import { v4 as uuid } from 'uuid';
 import * as telemetryEvents from '../telemetry/generated/main';
-import { nativeUiInteraction, onboardingCompleted } from '../telemetry/generated/main';
+import { onboardingCompleted } from '../telemetry/generated/main';
 import * as metadataEvents from '../telemetry/generated/metadata';
 import * as videoData from '../telemetry/generated/videoData';
 import * as regretDetails from '../telemetry/generated/regretDetails';
@@ -44,8 +41,6 @@ import {
 import OnBeforeSendHeadersDetailsType = WebRequest.OnBeforeSendHeadersDetailsType;
 import MessageSender = Runtime.MessageSender;
 import { onboardingUrl } from '../common/links';
-
-const surveyFollowupAlarmName = 'surveyFollowup';
 
 const loggingOn = process.env.ENABLE_BACKGROUND_LOGS === 'true';
 
@@ -84,11 +79,8 @@ export class BackgroundScript {
 		this.attachInstallHook();
 		await this.initializeExtension();
 		await this.initializeSentry();
-		await this.updateBadgeIcon();
 		this.attachRequestHook();
 		this.attachMessageListener();
-		// we want to disable surveys collection for now
-		// this.initializeSurveyAlarm();
 	}
 
 	private async initializeExtension() {
@@ -117,22 +109,6 @@ export class BackgroundScript {
 		metadataEvents.installationId.set(installId);
 		metadataEvents.experimentArm.set(experimentArmValue);
 		metadataEvents.feedbackUiVariant.set(feedbackUiVariantValue);
-	}
-
-	async updateBadgeIcon() {
-		const allSurveysCompleted = await allSurveysCompletedValue.acquire();
-		const onboardingCompleted = await onboardingCompletedValue.acquire();
-		const now = +new Date();
-		const reminderDate = await surveyReminderDate.acquire();
-		const showSurveyReminder = !allSurveysCompleted && reminderDate && now > reminderDate;
-		log('update badge icon', reminderDate, now, showSurveyReminder);
-		const icon =
-			!onboardingCompleted || showSurveyReminder
-				? 'assets/icon/icon-toolbar-badge.svg.38x38.png'
-				: 'assets/icon/icon-toolbar-active.svg.38x38.png';
-		await browser.browserAction.setIcon({
-			path: icon,
-		});
 	}
 
 	private async initializeSentry(): Promise<void> {
@@ -216,15 +192,6 @@ export class BackgroundScript {
 		};
 		await this.pushEvent(EventType.VideoViewed, 'VideoViewed' as any, tabId, message.data);
 		telemetryEvents.videoPlayed.record({ videos_played: playedVideoCount });
-	}
-
-	private attachAlarmListener() {
-		browser.alarms.onAlarm.addListener(async ({ name }) => {
-			log('alarm triggered', name);
-			if (name === surveyFollowupAlarmName) {
-				await this.updateBadgeIcon();
-			}
-		});
 	}
 
 	private attachMessageListener() {
@@ -368,33 +335,6 @@ export class BackgroundScript {
 
 		onboardingCompleted.record();
 		mainEventsPing.submit();
-	}
-
-	private async initializeSurveyAlarm(create = false): Promise<number> {
-		this.attachAlarmListener();
-		const interval = 1814400; // 3 weeks
-		// const interval = 30; // 30 seconds for testing
-		let when = await surveyReminderDate.acquire();
-		log('init alarm');
-		const now = +new Date();
-		if (create && when === null) {
-			when = interval * 1000 + now;
-			await surveyReminderDate.set(when);
-		}
-		if (when) {
-			browser.alarms.create(surveyFollowupAlarmName, { when });
-		}
-		return when;
-	}
-
-	async onSurveyClick() {
-		// we want to disable surveys collection for now
-		// await this.initializeSurveyAlarm(true);
-	}
-
-	async onReminderSurveyClick() {
-		await allSurveysCompletedValue.set(true);
-		await this.updateBadgeIcon();
 	}
 
 	async updateFeedbackUiVariant(variant: FeedbackUiVariant): Promise<void> {
