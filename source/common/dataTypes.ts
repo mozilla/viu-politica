@@ -1,5 +1,4 @@
 import { EventType, VideoThumbnailType } from './messages';
-import { FeedbackType } from './common';
 
 export type ProcessedEvent = {
 	id: string;
@@ -8,7 +7,7 @@ export type ProcessedEvent = {
 	counter: number;
 	tabId: number;
 	type: EventType;
-	subtype: FeedbackType | VideoThumbnailType;
+	subtype: VideoThumbnailType;
 	payload: ProcessedVideoData | any;
 };
 
@@ -29,7 +28,6 @@ export interface ProcessedVideoData extends VideoData {
 }
 
 // All of the next type definitions were automatically inferred from YT datastructures. Used only as hints.
-
 export interface Data {
 	videoId: string;
 	thumbnail: ChannelThumbnailClass;

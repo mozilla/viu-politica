@@ -1,6 +1,5 @@
 import { browser } from 'webextension-polyfill-ts';
 import { ProcessedVideoData } from './dataTypes';
-import { FeedbackType, FeedbackUiVariant } from './common';
 
 export enum EventType {
 	RegretVideo = 'RegretVideo',
@@ -17,13 +16,6 @@ export enum VideoThumbnailType {
 	HomePageRecommendation = 'HomePageRecommendation',
 	Other = 'OtherRecommendation',
 }
-
-export type SendVideoFeedbackEvent = {
-	type: EventType.SendVideoFeedback;
-	videoId: string;
-	feedbackType: FeedbackType;
-	feedbackToken?: string;
-};
 
 export type AuthRecordedEvent = {
 	type: EventType.AuthRecorded;
@@ -45,6 +37,7 @@ export type VideoBatchRecordedEvent = {
 export type RegretVideoEvent = {
 	type: EventType.RegretVideo;
 	videoId: string;
+	// TODO(revisit)
 	triggerOnboarding?: boolean;
 };
 
@@ -55,7 +48,6 @@ export type RegretDetailsSubmittedEvent = {
 };
 
 export type Message =
-	| SendVideoFeedbackEvent
 	| AuthRecordedEvent
 	| VideoBatchRecordedEvent
 	| RegretVideoEvent
@@ -64,8 +56,4 @@ export type Message =
 
 export type PagePingEvent = {
 	type: 'ping';
-	injectButtons: boolean;
-	onboardingCompleted: boolean;
-	dataCollectionEnabled: boolean;
-	feedbackUiVariant: FeedbackUiVariant;
 };

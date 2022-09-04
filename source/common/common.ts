@@ -1,17 +1,8 @@
 import { browser, Runtime } from 'webextension-polyfill-ts';
 import { v4 as uuid } from 'uuid';
-import { EventType, SendVideoFeedbackEvent } from './messages';
 import { localStorageKeys, StorageValue } from './storage';
 import { useEffect, useState } from 'react';
 import OnInstalledReason = Runtime.OnInstalledReason;
-
-/** Youtube feedback type sent */
-export enum FeedbackType {
-	Dislike = 'dislike',
-	NotInterested = 'not_interested',
-	NoRecommend = 'dont_recommend',
-	RemoveFromHistory = 'remove_from_history',
-}
 
 export enum FeedbackUiVariant {
 	/** Feedback UX variant with an intermediate "Tell us more" step */
@@ -41,43 +32,9 @@ function getRandomInt(min: number, max: number) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export async function dispatchEventToTab(tabId: number, message: SendVideoFeedbackEvent) {
-	await browser.tabs.sendMessage(tabId, message);
-}
-
-export async function dispatchSendFeedbackEvent({
-	videoId,
-	feedbackTokenNotInterested,
-	feedbackTokenNoRecommend,
-	tabId,
-}: {
-	tabId: number;
-	videoId: string;
-	feedbackTokenNotInterested?: string;
-	feedbackTokenNoRecommend?: string;
-}) {
-	let feedbackType: FeedbackType = FeedbackType.Dislike;
-	let feedbackToken;
-	if (feedbackTokenNoRecommend) {
-		feedbackType = FeedbackType.NoRecommend;
-		feedbackToken = feedbackTokenNoRecommend;
-	} else if (feedbackTokenNotInterested) {
-		feedbackType = FeedbackType.NotInterested;
-		feedbackToken = feedbackTokenNotInterested;
-	}
-	await dispatchEventToTab(tabId, {
-		videoId,
-		feedbackToken,
-		feedbackType,
-		type: EventType.SendVideoFeedback,
-	} as SendVideoFeedbackEvent);
-	alert('Feedback sent to YT tab');
-}
-
 export const installationId = new StorageValue<string>(localStorageKeys.installationId, uuid);
 
-/** Assigns users to the opt-out experiment arm by default, return existing arm if set */
-export const experimentArm = new StorageValue<ExperimentArm>(localStorageKeys.experimentArm, () => {
+new StorageValue<ExperimentArm>(localStorageKeys.experimentArm, () => {
 	const arms = Object.values(ExperimentArm);
 	// Get random experiment arm, omitting the last arm (the opt-out arm)
 	const armIndex = getRandomInt(0, arms.length - 2);
@@ -85,21 +42,10 @@ export const experimentArm = new StorageValue<ExperimentArm>(localStorageKeys.ex
 	return armCode as ExperimentArm;
 });
 
-/** Assigns users to a random feedback UI variant cohort, return existing cohort if set */
-export const feedbackUiVariant = new StorageValue<FeedbackUiVariant>(
-	localStorageKeys.feedbackUiVariant,
-	() => FeedbackUiVariant.ForcedModal,
-);
-
 /** Last extension installation trigger: install, update or browser_update */
 export const installReason = new StorageValue<OnInstalledReason>(localStorageKeys.installedAsUpdate, () => 'install');
 
-export const onboardingCompleted = new StorageValue<boolean>(localStorageKeys.onboardingCompleted, () => false);
-
 export const errorReportingEnabled = new StorageValue<boolean>(localStorageKeys.errorReportingEnabled, () => false);
-
-/** Number of times to show the onboarding reminder popup for users who didn't complete onboarding */
-export const onboardingReminderCount = new StorageValue<number>(localStorageKeys.onboardingReminderCount, () => 2);
 
 /** Set of all unique video ids played */
 export const videosPlayedSet = new StorageValue<Record<string, true>>(localStorageKeys.videosPlayedSet, () => ({}));

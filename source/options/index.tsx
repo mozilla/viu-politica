@@ -7,12 +7,9 @@ import '../common/photon-components-web/attributes/index.css';
 import './index.css';
 import { installationId, useErrorReportingToggle } from '../common/common';
 import { getBackgroundScript, useAsync } from '../common/helpers';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { browser } from 'webextension-polyfill-ts';
 import { extensionFeedbackUrl } from '../common/links';
-
-const enableDebugPage = process.env.ENABLE_DEBUG_PAGE === 'true';
-const debugPageUrl = browser.runtime.getURL('debug/index.html');
 
 export function Main() {
 	const [enableErrorReporting, setEnableErrorReporting] = useErrorReportingToggle();
@@ -26,12 +23,6 @@ export function Main() {
 		},
 		[bg],
 	);
-	const [dataDeletionRequested, setDataDeletionRequested] = useState(false);
-
-	const requestDataDeletion = useCallback(async () => {
-		bg.sendDataDeletionRequest();
-		setDataDeletionRequested(true);
-	}, [bg]);
 
 	const onExport = useCallback(() => {
 		const data = JSON.stringify(bg?.events || []);
@@ -43,7 +34,6 @@ export function Main() {
 		);
 		browser.tabs.create({ url });
 	}, [bg]);
-	const state = {} as any;
 	return (
 		<>
 			<div className="text-xl font-semibold">Error Reporting</div>
@@ -73,29 +63,6 @@ export function Main() {
 					Inspect Collected Data
 				</Button>
 			</div>
-			<div className="my-4 flex justify-between items-center">
-				{(dataDeletionRequested && (
-					<span className="text-center font-semibold">
-						Telemetry has been disabled and data deletion has been requested.
-					</span>
-				)) || (
-					<>
-						<span className="">
-							Disable telemetry and request that all your RegretsReporter data gets deleted from Mozilla's servers
-						</span>
-						<Button onClick={requestDataDeletion} className="btn btn-grey ml-4">
-							Send Data Deletion Request
-						</Button>
-					</>
-				)}
-			</div>
-			{enableDebugPage && (
-				<div className="my-4">
-					<a href={debugPageUrl} rel="noreferrer noopener" target="_blank" className="text-red underline">
-						View debug page.
-					</a>
-				</div>
-			)}
 			<div className="text-xl font-semibold mt-12">Feedback</div>
 			<div className="my-4">
 				Do you have feedback about the RegretsReporter? We would love to hear it.{' '}

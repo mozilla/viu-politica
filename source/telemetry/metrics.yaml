@@ -31,9 +31,6 @@ main:
     description: Event sent on injected regret button clicks
     send_in_pings: [main-events]
     extra_keys:
-      feedback_type:
-        description: Feedback type
-        type: string
       video_data_id: &video_data_id
         description: Video UUID (not to be confused with YT video id)
         type: string
@@ -55,28 +52,10 @@ main:
     data_reviews: *data_review
     expires: *expires
 metadata:
-  feedback_ui_variant:
-    type: string
-    description: Feedback UI variant
-    lifetime: user
-    send_in_pings: &metadata_pings [main-events, video-data]
-    notification_emails: *notification_emails
-    bugs: *bugs
-    data_reviews: *data_review
-    expires: *expires
-  experiment_arm:
-    type: string
-    description: Experiment arm
-    lifetime: user
-    send_in_pings: *metadata_pings
-    notification_emails: *notification_emails
-    bugs: *bugs
-    data_reviews: *data_review
-    expires: *expires
   installation_id:
     type: string
     description: Installation ID
-    send_in_pings: *metadata_pings
+    send_in_pings: [main-events, video-data]
     lifetime: user
     notification_emails: *notification_emails
     bugs: *bugs

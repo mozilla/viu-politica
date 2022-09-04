@@ -40,7 +40,6 @@ export const videoPlayed = new EventMetricType<{
  * Generated from `main.regret_action`.
  */
 export const regretAction = new EventMetricType<{
-    feedback_type?: string,
     video_data_id?: string,
 }>({
     category: "main",
@@ -48,23 +47,7 @@ export const regretAction = new EventMetricType<{
     sendInPings: ["main-events"],
     lifetime: "ping",
     disabled: false,
-}, ["feedback_type", "video_data_id"]);
-
-/**
- * Event sent on native YT UI clicks
- *
- * Generated from `main.native_ui_interaction`.
- */
-export const nativeUiInteraction = new EventMetricType<{
-    feedback_type?: string,
-    video_data_id?: string,
-}>({
-    category: "main",
-    name: "native_ui_interaction",
-    sendInPings: ["main-events"],
-    lifetime: "ping",
-    disabled: false,
-}, ["feedback_type", "video_data_id"]);
+}, ["video_data_id"]);
 
 /**
  * Event sent on YT video recommendation capture

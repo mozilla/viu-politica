@@ -1,8 +1,7 @@
-import { EventType, PagePingEvent, RegretVideoEvent } from '../common/messages';
+import { EventType, RegretVideoEvent } from '../common/messages';
 import { log } from './content';
 import { browser } from 'webextension-polyfill-ts';
 import { onModalOpen } from './modal';
-import { FeedbackUiVariant, onboardingReminderCount } from '../common/common';
 
 enum PageLocation {
 	Home,
@@ -57,11 +56,7 @@ function clearInjectedButtons() {
 	}
 }
 
-function injectHovers(
-	onboardingCompleted = false,
-	feedbackUiVariant: FeedbackUiVariant,
-	dataCollectionEnabled: boolean,
-) {
+function injectHovers() {
 	log('injecting hovers');
 	const domNodes = Array.from(document.getElementsByTagName('ytd-thumbnail'));
 	for (const domNode of domNodes) {
@@ -69,37 +64,22 @@ function injectHovers(
 			injectButton(
 				domNode as HTMLElement,
 				() => (domNode.getElementsByTagName('a') as any).thumbnail.href.split('=')[1],
-				onboardingCompleted,
-				feedbackUiVariant,
-				dataCollectionEnabled,
 			);
 		}
 	}
 	const mainPlayer = document.getElementById('movie_player');
 	if (mainPlayer && isElementVisible(mainPlayer)) {
-		injectButton(mainPlayer, getMainVideoId, onboardingCompleted, feedbackUiVariant, dataCollectionEnabled);
+		injectButton(mainPlayer, getMainVideoId);
 	}
 
 	const previewPlayer = document.getElementById('video-preview-container');
 	const previewVideoIdThunk = () => (document.getElementById('media-container-link') as any)?.href.split('=')[1];
 	if (previewPlayer && isElementVisible(previewPlayer)) {
-		injectButton(
-			previewPlayer as HTMLElement,
-			previewVideoIdThunk,
-			onboardingCompleted,
-			feedbackUiVariant,
-			dataCollectionEnabled,
-		);
+		injectButton(previewPlayer as HTMLElement, previewVideoIdThunk);
 	}
 }
 
-function injectButton(
-	parentNode: HTMLElement,
-	getVideoId: () => string | void,
-	onboardingCompleted: boolean,
-	feedbackUiVariant: FeedbackUiVariant,
-	dataCollectionEnabled: boolean,
-) {
+function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) {
 	const videoId = getVideoId();
 	const lastChild = parentNode.lastElementChild;
 	const hasInjectedButton = lastChild && lastChild.classList.contains('mrr-injected-btn');
@@ -111,10 +91,9 @@ function injectButton(
 		return;
 	}
 	const buttonId = generateButtonId(videoId);
-	const injectionHash = `${onboardingCompleted}_${feedbackUiVariant}_${dataCollectionEnabled}`;
 	if (hasInjectedButton) {
 		const prevButton = lastChild as HTMLDivElement;
-		const skipButtonInjection = buttonId === prevButton.id && prevButton.dataset.hash === injectionHash;
+		const skipButtonInjection = buttonId === prevButton.id;
 		if (skipButtonInjection) {
 			return;
 		} else {
@@ -123,7 +102,6 @@ function injectButton(
 	}
 	const btn = document.createElement('div');
 	btn.id = buttonId;
-	btn.dataset.hash = injectionHash;
 	btn.className = 'mrr-injected-btn';
 
 	const label = document.createElement('span');
@@ -144,19 +122,9 @@ function injectButton(
 		if (state === 'none') {
 			label.innerText = 'Submitted';
 			btn.classList.add('visible', 'submitted');
-			const reminderCount = await onboardingReminderCount.acquire();
-			let shouldRedirect = false;
-			if (!onboardingCompleted && reminderCount > 0) {
-				shouldRedirect = window.confirm("Do you want to contribute to Mozilla's crowdsourced research into YouTube?");
-				await onboardingReminderCount.set(reminderCount - 1);
-			}
-			postMessage({ type: EventType.RegretVideo, videoId, triggerOnboarding: shouldRedirect } as RegretVideoEvent);
-			if (!dataCollectionEnabled) {
-				state = 'submitted';
-				btn.classList.remove('visible');
-				return;
-			}
-			if (feedbackUiVariant === FeedbackUiVariant.ForcedModal) {
+			postMessage({ type: EventType.RegretVideo, videoId, triggerOnboarding: false } as RegretVideoEvent);
+			// TODO(revisit)
+			if (true) {
 				onSubmitted();
 				onModalOpen(videoId);
 			} else {
@@ -165,9 +133,7 @@ function injectButton(
 			return;
 		}
 		if (state === 'submitted') {
-			if (dataCollectionEnabled) {
-				onSubmitted();
-			}
+			onSubmitted();
 			return;
 		}
 		if (state === 'tell-more') {
@@ -200,12 +166,7 @@ export function setButtonToFinalState(videoId: string, node?: Element) {
 	button.onclick = undefined;
 }
 
-export function injectElements({
-	injectButtons,
-	onboardingCompleted,
-	feedbackUiVariant,
-	dataCollectionEnabled,
-}: PagePingEvent) {
+export function injectElements() {
 	const pageLocation = getPageLocation();
 	const enabled = pageLocation === PageLocation.Watch || pageLocation === PageLocation.Home;
 
@@ -213,10 +174,5 @@ export function injectElements({
 		clearInjectedButtons();
 		return;
 	}
-
-	if (injectButtons) {
-		injectHovers(onboardingCompleted, feedbackUiVariant, dataCollectionEnabled);
-	} else {
-		clearInjectedButtons();
-	}
+	injectHovers();
 }

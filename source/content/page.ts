@@ -138,7 +138,7 @@ function listenForMessages() {
 		if (!isSameOrigin || !isPollEvent) {
 			return;
 		}
-		onPollEvent(e.data);
+		onPollEvent();
 	});
 }
 
@@ -177,10 +177,8 @@ function parseMainVideoData(): ProcessedVideoData | void {
 	return { id, title, length, views, channel, tokens, seenAt, description };
 }
 
-function onPollEvent({ onboardingCompleted, dataCollectionEnabled }: PagePingEvent) {
-	if (onboardingCompleted && dataCollectionEnabled) {
-		parseVideosOnPage();
-	}
+function onPollEvent() {
+	parseVideosOnPage();
 }
 
 export default function () {

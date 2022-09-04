@@ -7,32 +7,6 @@
 import StringMetricType from "@mozilla/glean/private/metrics/string";
 
 /**
- * Feedback UI variant
- *
- * Generated from `metadata.feedback_ui_variant`.
- */
-export const feedbackUiVariant = new StringMetricType({
-    category: "metadata",
-    name: "feedback_ui_variant",
-    sendInPings: ["main-events", "video-data"],
-    lifetime: "user",
-    disabled: false,
-});
-
-/**
- * Experiment arm
- *
- * Generated from `metadata.experiment_arm`.
- */
-export const experimentArm = new StringMetricType({
-    category: "metadata",
-    name: "experiment_arm",
-    sendInPings: ["main-events", "video-data"],
-    lifetime: "user",
-    disabled: false,
-});
-
-/**
  * Installation ID
  *
  * Generated from `metadata.installation_id`.

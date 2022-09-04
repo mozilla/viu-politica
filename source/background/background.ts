@@ -11,18 +11,7 @@ import {
 	VideoViewedEvent,
 } from '../common/messages';
 import { ProcessedEvent, ProcessedVideoData, VideoData } from '../common/dataTypes';
-import {
-	dispatchEventToTab,
-	errorReportingEnabled,
-	ExperimentArm,
-	experimentArm,
-	FeedbackType,
-	feedbackUiVariant,
-	FeedbackUiVariant,
-	installationId,
-	installReason,
-	videosPlayedSet,
-} from '../common/common';
+import { errorReportingEnabled, installationId, installReason, videosPlayedSet } from '../common/common';
 import { v4 as uuid } from 'uuid';
 import * as telemetryEvents from '../telemetry/generated/main';
 import { onboardingCompleted } from '../telemetry/generated/main';
@@ -87,18 +76,11 @@ export class BackgroundScript {
 		// create a unique id identifying this extension installation
 		const installId = await installationId.acquire();
 
-		// assign user cohort to opt-out by default
-		const experimentArmValue = await experimentArm.acquire(ExperimentArm.OptOut);
-
-		// assign feedback ui cohort randomly
-		const feedbackUiVariantValue = await feedbackUiVariant.acquire();
-
 		// initialize played video set
 		await videosPlayedSet.acquire();
 
 		// initialize Glean
-		const enableUploads = experimentArmValue !== ExperimentArm.OptOut;
-		Glean.initialize('regrets.reporter.ucs', enableUploads, {
+		Glean.initialize('regrets.reporter.ucs', true, {
 			serverEndpoint: process.env.TELEMETRY_SERVER,
 			appBuild: process.env.EXTENSION_VERSION,
 			appDisplayVersion: process.env.EXTENSION_VERSION,
@@ -107,13 +89,10 @@ export class BackgroundScript {
 		Glean.setLogPings(loggingOn);
 
 		metadataEvents.installationId.set(installId);
-		metadataEvents.experimentArm.set(experimentArmValue);
-		metadataEvents.feedbackUiVariant.set(feedbackUiVariantValue);
 	}
 
 	private async initializeSentry(): Promise<void> {
 		const installationIdValue = await installationId.acquire();
-		const experimentArmValue = await experimentArm.acquire();
 		Sentry.init({
 			enabled: await errorReportingEnabled.acquire(),
 			dsn: process.env.SENTRY_DSN,
@@ -129,7 +108,6 @@ export class BackgroundScript {
 				id: installationIdValue,
 			});
 			scope.setTags({
-				experimentArm: experimentArmValue,
 				label: 'v2',
 			});
 		});
@@ -218,15 +196,7 @@ export class BackgroundScript {
 		});
 	}
 
-	private async dataCollectionDisabled() {
-		const expArm = await experimentArm.acquire();
-		return expArm === ExperimentArm.OptOut;
-	}
-
 	private async onRegretDetailsSubmitted(message: RegretDetailsSubmittedEvent, tabId: number) {
-		if (await this.dataCollectionDisabled()) {
-			return;
-		}
 		const video = this.videoIndex[message.videoId];
 		const videoDataId = recordVideoData(video ? video : { id: message.videoId });
 		regretDetails.videoDataId.set(videoDataId);
@@ -239,59 +209,24 @@ export class BackgroundScript {
 	}
 
 	private async onRegretVideoEvent(message: RegretVideoEvent, tabId: number) {
-		const cohort = await experimentArm.acquire();
-
 		if (message.triggerOnboarding) {
 			await browser.tabs.create({
 				url: onboardingUrl,
 			});
 		}
 
-		log(`video ${message.videoId}, cohort ${cohort}`);
-
-		let feedbackToken;
-
-		const feedbackType = experimentArmToFeedbackType(cohort);
-
-		const actionRequiresToken =
-			feedbackType === FeedbackType.NotInterested || feedbackType === FeedbackType.NoRecommend;
+		log(`video ${message.videoId}`);
 
 		const video = this.videoIndex[message.videoId] as ProcessedVideoData | undefined;
-		if (!video && actionRequiresToken) {
-			log(`${message.videoId} not found in index, but action ${feedbackType} requires token, skipping`);
-			return;
-		} else {
-			log(`found video in index ${message.videoId}, tabId ${video?.tabId}`);
-		}
 
-		if (feedbackType === FeedbackType.NotInterested) {
-			feedbackToken = video.tokens.notInterested;
-		}
-
-		if (feedbackType === FeedbackType.NoRecommend) {
-			feedbackToken = video.tokens.dontRecommend;
-		}
-
-		if (!(await this.dataCollectionDisabled())) {
-			const videoDataId = recordVideoData(video ? video : { id: message.videoId });
-			telemetryEvents.regretAction.record({ feedback_type: feedbackType || 'none', video_data_id: videoDataId });
-			mainEventsPing.submit();
-			await this.pushEvent(EventType.VideoRegretted, feedbackType, tabId, video);
-		}
-
-		return await dispatchEventToTab(tabId, {
-			type: EventType.SendVideoFeedback,
-			feedbackType,
-			feedbackToken,
-			videoId: message.videoId,
-		});
+		const videoDataId = recordVideoData(video ? video : { id: message.videoId });
+		telemetryEvents.regretAction.record({ video_data_id: videoDataId });
+		mainEventsPing.submit();
+		await this.pushEvent(EventType.VideoRegretted, null, tabId, video);
 	}
 
 	private async onVideoBatchRecorded(message: VideoBatchRecordedEvent, tabId: number) {
 		log('got video batch data');
-		if (await this.dataCollectionDisabled()) {
-			return;
-		}
 		for (const videoData of message.data) {
 			this.videoIndex[videoData.id] = {
 				tabId,
@@ -312,12 +247,6 @@ export class BackgroundScript {
 		return;
 	}
 
-	// method called from options page
-	sendDataDeletionRequest(): void {
-		experimentArm.set(ExperimentArm.OptOut);
-		Glean.setUploadEnabled(false);
-	}
-
 	// method called from onboarding page
 	async onOnboardingCompleted(experimentOptedIn: boolean): Promise<void> {
 		if (!experimentOptedIn) {
@@ -325,27 +254,11 @@ export class BackgroundScript {
 		}
 		Glean.setUploadEnabled(true);
 
-		const experimentArmValue = await experimentArm.reset();
 		const installId = await installationId.acquire();
-		const feedbackUiVariantValue = await feedbackUiVariant.acquire();
 
 		metadataEvents.installationId.set(installId);
-		metadataEvents.experimentArm.set(experimentArmValue);
-		metadataEvents.feedbackUiVariant.set(feedbackUiVariantValue);
 
 		onboardingCompleted.record();
-		mainEventsPing.submit();
-	}
-
-	async updateFeedbackUiVariant(variant: FeedbackUiVariant): Promise<void> {
-		await feedbackUiVariant.set(variant);
-		metadataEvents.feedbackUiVariant.set(variant);
-		mainEventsPing.submit();
-	}
-
-	async updateExperimentArm(arm: ExperimentArm): Promise<void> {
-		await experimentArm.set(arm);
-		metadataEvents.experimentArm.set(arm);
 		mainEventsPing.submit();
 	}
 
@@ -380,21 +293,6 @@ function getUserAuth(details: OnBeforeSendHeadersDetailsType): { key: string; he
 			return { key, headers };
 		}
 	}
-}
-
-function experimentArmToFeedbackType(arm: ExperimentArm): FeedbackType | null {
-	switch (arm) {
-		case ExperimentArm.OptOut:
-		case ExperimentArm.DislikeAction:
-			return FeedbackType.Dislike;
-		case ExperimentArm.NotInterestedAction:
-			return FeedbackType.NotInterested;
-		case ExperimentArm.NoRecommendAction:
-			return FeedbackType.NoRecommend;
-		case ExperimentArm.RemoveFromHistory:
-			return FeedbackType.RemoveFromHistory;
-	}
-	return null;
 }
 
 function recordVideoData(data: Partial<VideoData>): string {

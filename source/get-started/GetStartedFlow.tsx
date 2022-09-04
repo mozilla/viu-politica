@@ -5,23 +5,17 @@ import '../common/photon-components-web/attributes/index.css';
 import '../common/tailwind.css';
 import { YourPrivacy } from './inc/YourPrivacy';
 import Checkbox from '../common/photon-components-web/photon-components/Checkbox';
-import { useErrorReportingToggle } from '../common/common';
-import { getBackgroundScript } from '../common/helpers';
 import { experimentGroupsUrl, privacyNoticeUrl } from '../common/links';
 import { localStorageKeys, useExtensionState } from '../common/storage';
 import classNames from 'classnames';
 
 export function GetStartedFlow() {
-	const [enableErrorReporting, setEnableErrorReporting] = useErrorReportingToggle();
 	const [submitted, setSubmitted] = useExtensionState(localStorageKeys.onboardingCompleted, false);
 	const [experimentOptedIn, setExperimentOptIn] = useExtensionState(localStorageKeys.experimentOptedIn, false);
 
 	const onSubmit = useCallback(async () => {
 		setSubmitted(true);
-		const bg = await getBackgroundScript();
-		await bg.onOnboardingCompleted(experimentOptedIn);
-		await bg.toggleErrorReporting(enableErrorReporting);
-	}, [experimentOptedIn, enableErrorReporting]);
+	}, []);
 
 	const hideWelcomeSection = window.location.hash === '#active-user';
 	return (
@@ -81,11 +75,6 @@ export function GetStartedFlow() {
 												checked={experimentOptedIn}
 												label="I would like to participate in Mozilla’s research into YouTube’s algorithmic controls."
 												onChange={() => setExperimentOptIn(!experimentOptedIn)}
-											/>
-											<Checkbox
-												checked={enableErrorReporting}
-												label="I would like to send extension error reports to Mozilla."
-												onChange={() => setEnableErrorReporting(!enableErrorReporting)}
 											/>
 											<div className="flex flex-row mt-6">
 												<button

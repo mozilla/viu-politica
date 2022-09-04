@@ -9,15 +9,6 @@ import * as ReactDOM from 'react-dom';
 import pageScript from 'bundle-text:./page.ts';
 import { Modal } from './modal';
 import * as React from 'react';
-import { makeDislikePayload, makeFeedbackPayload } from './payloads';
-import {
-	experimentArm,
-	ExperimentArm,
-	FeedbackType,
-	feedbackUiVariant,
-	onboardingCompleted as onboardingCompletedValue,
-} from '../common/common';
-import { universalFetch } from '../common/helpers';
 import { injectElements } from './button';
 
 const loggingOn = process.env.ENABLE_CONTENT_LOGS === 'true';
@@ -52,21 +43,11 @@ async function injectScript() {
 	(document.head || document.documentElement).appendChild(scr);
 
 	setInterval(async () => {
-		const cohort = await experimentArm.acquire();
-		const feedbackUiVariantValue = await feedbackUiVariant.acquire();
-		const injectButtons = cohort !== ExperimentArm.NoInject;
-		const dataCollectionEnabled = cohort !== ExperimentArm.OptOut;
-		const onboardingCompleted = await onboardingCompletedValue.acquire();
-
 		const event: PagePingEvent = {
 			type: 'ping',
-			injectButtons,
-			onboardingCompleted,
-			dataCollectionEnabled,
-			feedbackUiVariant: feedbackUiVariantValue,
 		};
 
-		injectElements(event);
+		injectElements();
 
 		/** Send pings to injected script to parse page videos and inject buttons */
 		window.postMessage(event, window.location.origin);
@@ -91,80 +72,6 @@ const onPageMessage = (event: MessageEvent) => {
 	browser.runtime.sendMessage(message);
 };
 
-/** Sends dislike through YT API */
-async function sendDislike(videoId: string) {
-	log(`send dislike ${videoId}`);
-	const url = `https://www.youtube.com/youtubei/v1/like/dislike?key=${ytApiKey}`;
-	const rawResponse = await universalFetch(url, {
-		method: 'POST',
-		headers: ytRequestHeaders,
-		body: JSON.stringify(makeDislikePayload(videoId)),
-	});
-	const res = await rawResponse.json();
-	log(res);
-}
-
-/** Make a request to YT history page and try to find a "remove from history" action token there */
-async function getRemoveFromHistoryToken(videoId) {
-	log('retrieving history token');
-	const initDataRegex = /(?:window\["ytInitialData"\]|ytInitialData)\W?=\W?({.*?});/;
-	const result = await universalFetch('https://www.youtube.com/feed/history', {
-		credentials: 'include',
-		method: 'GET',
-		mode: 'cors',
-	});
-	const body = await result.text();
-	try {
-		const matchedData = body.match(initDataRegex);
-		if (!matchedData[1]) throw new Error('Failed to parse YT initial data');
-		const initData = JSON.parse(matchedData[1]);
-		const groups: unknown = get(
-			initData,
-			'contents.twoColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer.contents',
-		);
-		if (!Array.isArray(groups)) {
-			throw new Error('Assert failed');
-		}
-
-		let matchingVideo;
-		for (const item of groups) {
-			const videoRenderers = get(item, 'itemSectionRenderer.contents');
-			for (const { videoRenderer } of videoRenderers) {
-				if (videoRenderer?.videoId && videoId === videoRenderer.videoId) {
-					matchingVideo = videoRenderer;
-					break;
-				}
-			}
-		}
-		if (!matchingVideo) {
-			log('video not found in watch history');
-			return;
-		}
-		const feedbackToken = get(
-			matchingVideo,
-			'menu.menuRenderer.topLevelButtons.0.buttonRenderer.serviceEndpoint.feedbackEndpoint.feedbackToken',
-		);
-
-		return feedbackToken;
-	} catch (e) {
-		log(e);
-		throw new Error('Failed to parse YT initial data');
-	}
-}
-
-/** Sends a "dont recommend", "remove from history" or "not interested" video feedback through the YT API */
-async function sendFeedbackRequest(videoId: string, feedbackToken: string) {
-	log(`send feedback request for ${videoId}`);
-	const url = `https://www.youtube.com/youtubei/v1/feedback?key=${ytApiKey}`;
-	const rawResponse = await universalFetch(url, {
-		method: 'POST',
-		headers: ytRequestHeaders,
-		body: JSON.stringify(makeFeedbackPayload(videoId, feedbackToken)),
-	});
-	const res = await rawResponse.json();
-	log(res);
-}
-
 /** Handle message from background script */
 browser.runtime.onMessage.addListener(async (message: Message) => {
 	log('got runtime message:', message);
@@ -172,22 +79,6 @@ browser.runtime.onMessage.addListener(async (message: Message) => {
 		log(`auth ${message.keyId}`);
 		ytApiKey = message.keyId;
 		ytRequestHeaders = message.headers;
-	}
-	if (message.type === EventType.SendVideoFeedback) {
-		switch (message.feedbackType) {
-			case FeedbackType.Dislike:
-				return sendDislike(message.videoId);
-			case FeedbackType.NotInterested:
-			case FeedbackType.NoRecommend:
-				return sendFeedbackRequest(message.videoId, message.feedbackToken);
-			case FeedbackType.RemoveFromHistory:
-				const feedbackToken = await getRemoveFromHistoryToken(message.videoId);
-				if (!feedbackToken) {
-					log('skipping "remove from history" action, no token found');
-					return;
-				}
-				return sendFeedbackRequest(message.videoId, feedbackToken);
-		}
 	}
 });
 
