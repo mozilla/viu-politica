@@ -80,7 +80,7 @@ export class BackgroundScript {
 		await videosPlayedSet.acquire();
 
 		// initialize Glean
-		Glean.initialize('regrets.reporter.ucs', true, {
+		Glean.initialize('test.test.test', false, {
 			serverEndpoint: process.env.TELEMETRY_SERVER,
 			appBuild: process.env.EXTENSION_VERSION,
 			appDisplayVersion: process.env.EXTENSION_VERSION,
