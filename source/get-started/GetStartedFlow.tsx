@@ -5,7 +5,7 @@ import '../common/photon-components-web/attributes/index.css';
 import logo from './img/logo.png';
 import '../common/tailwind.css';
 import classNames from 'classnames';
-import {faqPageUrl} from "../common/links";
+import { faqPageUrl } from '../common/links';
 
 export function GetStartedFlow() {
 	const hideWelcomeSection = window.location.hash === '#active-user';
@@ -32,9 +32,9 @@ export function GetStartedFlow() {
 										Ao instalar esta extensão, você está ajudando a Mozilla Foundation, a Universidade de Exeter, e o
 										Instituto Vero a entender o conteúdo político espalhado pelo YouTube em 2022.
 									</p>
-									<br/>
+									<br />
 									<h1>O que acontece agora:</h1>
-									<br/>
+									<br />
 									<p>
 										Agora você pode usar o YouTube normalmente. Se você achar que algum vídeo fala de algo ligado a
 										política, é só clicar no mapinha do Brasil no canto do vídeo pra informar a gente. Se você quiser,
@@ -56,29 +56,34 @@ export function GetStartedFlow() {
 					</div>
 					<div className="col-span-2" />
 					<div className="col-span-8 font-light pt-10">
-						Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link dos vídeos recomendados, e manda pra gente.
+						Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link
+						dos vídeos recomendados, e manda pra gente.
 						<br />
 						<br />
-						Cada pessoa que instala a extensão ajuda a gente a entender melhor que tipo de conteúdo político está
-						se espalhando pelo YouTube, seja ele diretamente sobre política, ou seja ele sobre outro assunto, mas
-						que acabe tocando em política também.
+						Cada pessoa que instala a extensão ajuda a gente a entender melhor que tipo de conteúdo político está se
+						espalhando pelo YouTube, seja ele diretamente sobre política, ou seja ele sobre outro assunto, mas que acabe
+						tocando em política também.
 						<br />
 						<br />
 						<p className="font-bold">
-							E é isso! A extensão não coleta nenhuma informação sobre você, e a sua contribuição é totalmente
-							anônima.
+							E é isso! A extensão não coleta nenhuma informação sobre você, e a sua contribuição é totalmente anônima.
 						</p>
 						<br />
-						Se você quiser contribuir um pouco mais com a pesquisa, nós temos um formulário. Ele é 100% opcional,
-						100% anônimo, e é só pra gente entender quem são as pessoas que contribuem para este projeto. Se você
-						puder responder ao formulário, o link está logo abaixo.
+						Se você quiser contribuir um pouco mais com a pesquisa, nós temos um formulário. Ele é 100% opcional, 100%
+						anônimo, e é só pra gente entender quem são as pessoas que contribuem para este projeto. Se você puder
+						responder ao formulário, o link está logo abaixo.
 						<br />
 						<br />
-						<a className="underline" href={''}>Clique aqui para acessar o formulário.</a>
+						<a className="underline" href={''}>
+							Clique aqui para acessar o formulário.
+						</a>
 						<br />
 						<br />
 						Faltou alguma informação? Você tem alguma pergunta? Veja as nossas perguntas mais frequentes{' '}
-						<a className="underline" href={faqPageUrl}>aqui</a>.
+						<a className="underline" href={faqPageUrl}>
+							aqui
+						</a>
+						.
 					</div>
 				</div>
 			</div>

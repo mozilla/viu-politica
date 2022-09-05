@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { EventType, Message, RegretDetailsSubmittedEvent } from '../common/messages';
-import {abuseReportingPlatformUrl, extensionFeedbackUrl, faqPageUrl} from '../common/links';
+import { abuseReportingPlatformUrl, extensionFeedbackUrl, faqPageUrl } from '../common/links';
 import { setButtonToFinalState } from './button';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -69,7 +69,8 @@ export function Modal() {
 						<div className="mrr-panel">
 							<div className="mrr-label">Obrigado por marcar este vídeo.</div>
 							<div className="mrr-message">
-								Se você acredita que este vídeo contém algum tipo de conteúdo inadequado pro YouTube, você pode denunciá-lo diretamente para o YouTube{' '}
+								Se você acredita que este vídeo contém algum tipo de conteúdo inadequado pro YouTube, você pode
+								denunciá-lo diretamente para o YouTube{' '}
 								<a href={faqPageUrl} target="_blank" rel="noreferrer">
 									aqui
 								</a>
