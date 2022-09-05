@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { EventType, Message, RegretDetailsSubmittedEvent } from '../common/messages';
-import { abuseReportingPlatformUrl, extensionFeedbackUrl } from '../common/links';
+import {abuseReportingPlatformUrl, extensionFeedbackUrl, faqPageUrl} from '../common/links';
 import { setButtonToFinalState } from './button';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -61,45 +61,41 @@ export function Modal() {
 			<div className="mrr-injected-modal">
 				<div className="mrr-header">
 					<div className="mrr-icon" />
-					<span>Mozilla RegretsReporter</span>
+					<span>Viu política</span>
 					<div className="mrr-close" onClick={close} />
 				</div>
 				{isSubmitted ? (
 					<>
 						<div className="mrr-panel">
-							<div className="mrr-label">Thank you for your submission.</div>
+							<div className="mrr-label">Obrigado por marcar este vídeo.</div>
 							<div className="mrr-message">
-								If you believe that the content you identified in this submission constitutes abuse under YouTube's
-								policies, please report it directly to YouTube via its{' '}
-								<a href={abuseReportingPlatformUrl} target="_blank" rel="noreferrer">
-									abuse-reporting platform
+								Se você acredita que este vídeo contém algum tipo de conteúdo inadequado pro YouTube, você pode denunciá-lo diretamente para o YouTube{' '}
+								<a href={faqPageUrl} target="_blank" rel="noreferrer">
+									aqui
 								</a>
 								.
 							</div>
 						</div>
 						<div className="mrr-footer">
-							Do you have feedback about the RegretsReporter? We would love to hear it.{' '}
+							Você tem alguma mensagem para a equipe do Viu política? Fale com a gente{' '}
 							<a href={extensionFeedbackUrl} target="_blank" rel="noreferrer">
-								Send us feedback
+								aqui
 							</a>
 							.
 						</div>
 					</>
 				) : (
 					<div className="mrr-panel">
-						<div className="mrr-label">
-							Please tell us more about your experience. Why do you want YouTube to stop recommending this content to
-							you?
-						</div>
+						<div className="mrr-label">O que você considera político nesse vídeo?</div>
 						<textarea
-							placeholder="Please enter your message."
+							placeholder="Escreva sua resposta aqui"
 							value={feedbackText}
 							onChange={(e) => {
 								setFeedbackText(e.target.value);
 							}}
 						/>
 						<button onClick={submit} disabled={feedbackTextEmpty}>
-							Submit feedback
+							Marcar vídeo
 						</button>
 					</div>
 				)}

@@ -1,15 +1,14 @@
 {
-	"name": "RegretsReporter",
-	"version": "2.0.8",
-	"description": "The RegretsReporter browser extension, built by the nonprofit Mozilla, helps you take control of your YouTube recommendations.",
+	"name": "Viu Política!",
+	"version": "1.0.0",
+	"description": "Ao instalar esta extensão, você está ajudando a Mozilla Foundation, a Universidade de Exeter, e o Instituto Vero a entender o conteúdo político espalhado pelo YouTube em 2022.",
 	"homepage_url": "https://github.com/mozilla-extensions/regrets-reporter",
 	"manifest_version": 2,
 	"minimum_chrome_version": "74",
 	"incognito": "not_allowed",
 	"icons": {
-	  "128": "assets/icon/extension-icon.svg.128x128.png",
-	  "96": "assets/icon/extension-icon.svg.96x96.png",
-	  "48": "assets/icon/extension-icon.svg.48x48.png"
+	  "128": "assets/icon/extension-icon-128x128.png",
+	  "16": "assets/icon/extension-icon-16x16.png"
 	},
 	"permissions": [
 	  "*://*.youtube.com/*",
@@ -29,8 +28,8 @@
 		]
 	},
   "browser_action": {
-	"default_icon": "assets/icon/icon-toolbar-active.svg.38x38.png",
-	"default_title": "RegretsReporter",
+	"default_icon": "assets/icon/extension-icon-46x46.png",
+	"default_title": "Viu Política!",
 	"default_popup": "popup/index.html"
   },
   "content_scripts": [

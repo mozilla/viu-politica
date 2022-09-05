@@ -70,11 +70,7 @@ ul.triangle-bullets li::before {
 }
 
 .img-mozilla-logo {
-	background-image: url('./img/mozilla-logo.svg');
 	width: 191px;
-	height: 54px;
-	background-repeat: no-repeat;
-	background-position: center;
 }
 
 .img-step-1,

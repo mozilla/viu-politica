@@ -105,7 +105,7 @@ function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) 
 	btn.className = 'mrr-injected-btn';
 
 	const label = document.createElement('span');
-	label.innerText = 'Stop Recommending';
+	label.innerText = 'VIU POLÍTICA?';
 
 	btn.appendChild(document.createElement('div'));
 	btn.appendChild(label);
@@ -115,7 +115,7 @@ function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) 
 		btn.classList.remove('visible', 'submitted');
 		btn.classList.add('tell-more');
 		state = 'tell-more';
-		label.innerText = 'Tell Us More';
+		label.innerText = 'Conte-nos mais';
 	};
 
 	btn.onclick = async function () {
@@ -162,7 +162,7 @@ export function setButtonToFinalState(videoId: string, node?: Element) {
 	const isSidebarVideo = sidebarContainer && sidebarContainer.contains(button);
 	button.classList.remove('tell-more');
 	button.classList.add('final');
-	(button.children[1] as HTMLElement).innerText = isSidebarVideo ? 'Thank you!' : 'Thank you for your submission';
+	(button.children[1] as HTMLElement).innerText = isSidebarVideo ? 'Obrigado!' : 'Obrigado por marcar este vídeo';
 	button.onclick = undefined;
 }
 
