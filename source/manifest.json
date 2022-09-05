@@ -41,7 +41,6 @@
   "web_accessible_resources": [
 	"debug/index.html",
 	"get-started/index.html",
-	"content/content.css",
-	"assets/icon/icon-toolbar-badge.svg.38x38.png"
+	"content/content.css"
   ]
 }

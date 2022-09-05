@@ -5,6 +5,7 @@ import '../common/photon-components-web/attributes/index.css';
 import logo from './img/logo.png';
 import '../common/tailwind.css';
 import classNames from 'classnames';
+import {faqPageUrl} from "../common/links";
 
 export function GetStartedFlow() {
 	const hideWelcomeSection = window.location.hash === '#active-user';
@@ -12,7 +13,7 @@ export function GetStartedFlow() {
 		<div className={classNames({ 'hide-welcome-section': hideWelcomeSection })}>
 			<div className="img-get-started-bg absolute" />
 			<div className="img-circles absolute" />
-			<div className="px-16">
+			<div className="px-16 mb-16">
 				<div className="flex flex-col">
 					<div className="justify-center">
 						<img className="img-mozilla-logo m-auto mt-12.5 leading-none" src={logo} />
@@ -54,7 +55,7 @@ export function GetStartedFlow() {
 						<div className="img-step-3 m-auto border border-grey-95" />
 					</div>
 					<div className="col-span-2" />
-					<div className="col-span-8 font-light">
+					<div className="col-span-8 font-light pt-10">
 						Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link dos vídeos recomendados, e manda pra gente.
 						<br />
 						<br />
@@ -73,13 +74,12 @@ export function GetStartedFlow() {
 						puder responder ao formulário, o link está logo abaixo.
 						<br />
 						<br />
-						<a href={''}>Clique aqui para acessar o formulário.</a>
+						<a className="underline" href={''}>Clique aqui para acessar o formulário.</a>
 						<br />
 						<br />
 						Faltou alguma informação? Você tem alguma pergunta? Veja as nossas perguntas mais frequentes{' '}
-						<a href={''}>aqui</a>.
+						<a className="underline" href={faqPageUrl}>aqui</a>.
 					</div>
-					<div className="col-span-2" />
 				</div>
 			</div>
 		</div>
