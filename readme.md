@@ -1,8 +1,9 @@
-# RegretsReporter
+# Viu Politica
 
 ## What the add-on does
 
-The RegretsReporter browser extension, built by the nonprofit Mozilla, lets you report regrettable recommendations on YouTube.
+
+The Viu Politica extension helps the Mozilla Foundation, the University of Exeter, and the Instituto Vero understand the political content spread by YouTube in 2022.
 
 ## Building the extension
 
@@ -13,5 +14,5 @@ The RegretsReporter browser extension, built by the nonprofit Mozilla, lets you 
 
 ## Releases
 
-This extension is being automatically built and bundled into an unsigned XPI using the [Github CI](https://github.com/adelsz/regrets-reporter/blob/master/.github/workflows/release.yml).  
+This extension is being automatically built and bundled into an unsigned XPI using the [Github CI](https://github.com/adelsz/regrets-reporter/blob/master/.github/workflows/release.yml).
 You can download such builds in the [releases](https://github.com/adelsz/regrets-reporter/releases) section.
