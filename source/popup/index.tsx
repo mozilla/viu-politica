@@ -8,7 +8,11 @@ export function Main() {
 			O Viu política ajuda você a contribuir com a pesquisa colaborativa sobre os algoritmos do YouTube e as Eleições
 			2022 no Brasil.
 			<br />
-			Saiba mais sobre como usar o Viu política e sobre a nossa pesquisa <a className="font-bold underline" href={faqPageUrl}>aqui</a>.
+			Saiba mais sobre como usar o Viu política e sobre a nossa pesquisa{' '}
+			<a className="font-bold underline" href={faqPageUrl}>
+				aqui
+			</a>
+			.
 		</div>
 	);
 }

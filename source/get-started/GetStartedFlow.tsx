@@ -55,8 +55,8 @@ export function GetStartedFlow() {
 					<div className="col-span-2" />
 					<div className="col-span-8 font-light pt-10">
 						<p className="font-bold">
-							Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link
-							dos vídeos recomendados, e manda pra gente.
+							Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o
+							link dos vídeos recomendados, e manda pra gente.
 						</p>
 						<br />
 						<br />
