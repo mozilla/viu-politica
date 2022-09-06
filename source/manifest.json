@@ -1,8 +1,8 @@
 {
 	"name": "Viu Política!",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "Ao instalar esta extensão, você está ajudando a Mozilla Foundation, a Universidade de Exeter, e o Instituto Vero a entender o conteúdo político espalhado pelo YouTube em 2022.",
-	"homepage_url": "https://github.com/mozilla-extensions/regrets-reporter",
+	"homepage_url": "https://github.com/evoluchico/viu-politica",
 	"manifest_version": 2,
 	"minimum_chrome_version": "74",
 	"incognito": "not_allowed",
