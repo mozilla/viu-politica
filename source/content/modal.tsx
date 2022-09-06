@@ -71,7 +71,7 @@ export function Modal() {
 							<div className="mrr-message">
 								Se você acredita que este vídeo contém algum tipo de conteúdo inadequado pro YouTube, você pode
 								denunciá-lo diretamente para o YouTube{' '}
-								<a href={faqPageUrl} target="_blank" rel="noreferrer">
+								<a href="https://support.google.com/youtube/answer/2802027?hl=pt-BR" target="_blank" rel="noreferrer">
 									aqui
 								</a>
 								.
@@ -79,7 +79,7 @@ export function Modal() {
 						</div>
 						<div className="mrr-footer">
 							Você tem alguma mensagem para a equipe do Viu política? Fale com a gente{' '}
-							<a href={extensionFeedbackUrl} target="_blank" rel="noreferrer">
+							<a href="mailto:viupolitica@gmail.com" target="_blank" rel="noreferrer">
 								aqui
 							</a>
 							.

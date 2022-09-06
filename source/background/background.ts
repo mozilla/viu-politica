@@ -80,7 +80,7 @@ export class BackgroundScript {
 		await videosPlayedSet.acquire();
 
 		// initialize Glean
-		Glean.initialize(process.env.GLEAN_APPLICATION_ID, true, {
+		Glean.initialize(process.env.GLEAN_APPLICATION_ID, false, {
 			serverEndpoint: process.env.TELEMETRY_SERVER,
 			appBuild: process.env.EXTENSION_VERSION,
 			appDisplayVersion: process.env.EXTENSION_VERSION,

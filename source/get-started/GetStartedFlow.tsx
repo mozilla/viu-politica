@@ -4,13 +4,11 @@ import '../common/photon-components-web/attributes/index.css';
 // @ts-expect-error png declaration
 import logo from './img/logo.png';
 import '../common/tailwind.css';
-import classNames from 'classnames';
 import { faqPageUrl } from '../common/links';
 
 export function GetStartedFlow() {
-	const hideWelcomeSection = window.location.hash === '#active-user';
 	return (
-		<div className={classNames({ 'hide-welcome-section': hideWelcomeSection })}>
+		<div>
 			<div className="img-get-started-bg absolute" />
 			<div className="img-circles absolute" />
 			<div className="px-16 mb-16">
@@ -56,8 +54,10 @@ export function GetStartedFlow() {
 					</div>
 					<div className="col-span-2" />
 					<div className="col-span-8 font-light pt-10">
-						Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link
-						dos vídeos recomendados, e manda pra gente.
+						<p className="font-bold">
+							Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link
+							dos vídeos recomendados, e manda pra gente.
+						</p>
 						<br />
 						<br />
 						Cada pessoa que instala a extensão ajuda a gente a entender melhor que tipo de conteúdo político está se
@@ -74,13 +74,13 @@ export function GetStartedFlow() {
 						responder ao formulário, o link está logo abaixo.
 						<br />
 						<br />
-						<a className="underline" href={''}>
+						<a className="underline font-bold" href="https://www.surveymonkey.co.uk/r/WV7G8WZ">
 							Clique aqui para acessar o formulário.
 						</a>
 						<br />
 						<br />
 						Faltou alguma informação? Você tem alguma pergunta? Veja as nossas perguntas mais frequentes{' '}
-						<a className="underline" href={faqPageUrl}>
+						<a className="underline font-bold" href={faqPageUrl}>
 							aqui
 						</a>
 						.
