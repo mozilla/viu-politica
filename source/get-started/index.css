@@ -83,15 +83,15 @@ ul.triangle-bullets li::before {
 }
 
 .img-step-1 {
-	background-image: url('./img/step_1.jpg');
+	background-image: url('./img/Screenshot-1.png');
 }
 
 .img-step-2 {
-	background-image: url('./img/step_2.jpg');
+	background-image: url('./img/Screenshot-2.png');
 }
 
 .img-step-3 {
-	background-image: url('./img/step_3.jpg');
+	background-image: url('./img/Screenshot-3.png');
 }
 
 .button {
