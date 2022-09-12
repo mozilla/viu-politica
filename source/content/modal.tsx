@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { EventType, Message, RegretDetailsSubmittedEvent } from '../common/messages';
-import { abuseReportingPlatformUrl, extensionFeedbackUrl, faqPageUrl } from '../common/links';
 import { setButtonToFinalState } from './button';
 import { browser } from 'webextension-polyfill-ts';
 
