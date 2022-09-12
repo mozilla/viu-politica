@@ -14,7 +14,6 @@ import { ProcessedEvent, ProcessedVideoData, VideoData } from '../common/dataTyp
 import { errorReportingEnabled, installationId, installReason, videosPlayedSet } from '../common/common';
 import { v4 as uuid } from 'uuid';
 import * as telemetryEvents from '../telemetry/generated/main';
-import { onboardingCompleted } from '../telemetry/generated/main';
 import * as metadataEvents from '../telemetry/generated/metadata';
 import * as videoData from '../telemetry/generated/videoData';
 import * as regretDetails from '../telemetry/generated/regretDetails';
@@ -80,7 +79,7 @@ export class BackgroundScript {
 		await videosPlayedSet.acquire();
 
 		// initialize Glean
-		Glean.initialize(process.env.GLEAN_APPLICATION_ID, false, {
+		Glean.initialize(process.env.GLEAN_APPLICATION_ID, true, {
 			serverEndpoint: process.env.TELEMETRY_SERVER,
 			appBuild: process.env.EXTENSION_VERSION,
 			appDisplayVersion: process.env.EXTENSION_VERSION,
@@ -245,21 +244,6 @@ export class BackgroundScript {
 		}
 		mainEventsPing.submit();
 		return;
-	}
-
-	// method called from onboarding page
-	async onOnboardingCompleted(experimentOptedIn: boolean): Promise<void> {
-		if (!experimentOptedIn) {
-			return;
-		}
-		Glean.setUploadEnabled(true);
-
-		const installId = await installationId.acquire();
-
-		metadataEvents.installationId.set(installId);
-
-		onboardingCompleted.record();
-		mainEventsPing.submit();
 	}
 
 	private async getUniquePlayedVideosCount() {
