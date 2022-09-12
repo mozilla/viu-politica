@@ -7,19 +7,6 @@
 import EventMetricType from "@mozilla/glean/private/metrics/event";
 
 /**
- * Event sent after user clicks submit on onboarding page
- *
- * Generated from `main.onboarding_completed`.
- */
-export const onboardingCompleted = new EventMetricType({
-    category: "main",
-    name: "onboarding_completed",
-    sendInPings: ["main-events"],
-    lifetime: "ping",
-    disabled: false,
-}, []);
-
-/**
  * Event sent on video plays
  *
  * Generated from `main.video_played`.
@@ -40,6 +27,7 @@ export const videoPlayed = new EventMetricType<{
  * Generated from `main.regret_action`.
  */
 export const regretAction = new EventMetricType<{
+    page_view_id?: string,
     video_data_id?: string,
 }>({
     category: "main",
@@ -47,7 +35,7 @@ export const regretAction = new EventMetricType<{
     sendInPings: ["main-events"],
     lifetime: "ping",
     disabled: false,
-}, ["video_data_id"]);
+}, ["page_view_id", "video_data_id"]);
 
 /**
  * Event sent on YT video recommendation capture
@@ -55,6 +43,7 @@ export const regretAction = new EventMetricType<{
  * Generated from `main.video_recommended`.
  */
 export const videoRecommended = new EventMetricType<{
+    page_view_id?: string,
     recommendation_type?: string,
     video_data_id?: string,
 }>({
@@ -63,6 +52,6 @@ export const videoRecommended = new EventMetricType<{
     sendInPings: ["main-events"],
     lifetime: "ping",
     disabled: false,
-}, ["recommendation_type", "video_data_id"]);
+}, ["page_view_id", "recommendation_type", "video_data_id"]);
 
 
