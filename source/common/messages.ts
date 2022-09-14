@@ -17,12 +17,6 @@ export enum VideoThumbnailType {
 	Other = 'OtherRecommendation',
 }
 
-export type AuthRecordedEvent = {
-	type: EventType.AuthRecorded;
-	keyId: string;
-	headers: Record<string, string>;
-};
-
 export type VideoViewedEvent = {
 	type: EventType.VideoViewed;
 	data: ProcessedVideoData;
@@ -48,7 +42,6 @@ export type RegretDetailsSubmittedEvent = {
 };
 
 export type Message =
-	| AuthRecordedEvent
 	| VideoBatchRecordedEvent
 	| RegretVideoEvent
 	| VideoViewedEvent

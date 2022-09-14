@@ -1,8 +1,7 @@
-import { browser, Runtime, WebRequest } from 'webextension-polyfill-ts';
+import { browser, Runtime } from 'webextension-polyfill-ts';
 import Glean from '@mozilla/glean/webext';
 import * as Sentry from '@sentry/browser';
 import {
-	AuthRecordedEvent,
 	EventType,
 	Message,
 	RegretDetailsSubmittedEvent,
@@ -26,7 +25,6 @@ import {
 // inject browser polyfill into global scope
 (window as any).browser = browser;
 
-import OnBeforeSendHeadersDetailsType = WebRequest.OnBeforeSendHeadersDetailsType;
 import MessageSender = Runtime.MessageSender;
 import { onboardingUrl } from '../common/links';
 
@@ -67,7 +65,6 @@ export class BackgroundScript {
 		this.attachInstallHook();
 		await this.initializeExtension();
 		await this.initializeSentry();
-		this.attachRequestHook();
 		this.attachMessageListener();
 	}
 
@@ -112,12 +109,6 @@ export class BackgroundScript {
 		});
 	}
 
-	// called from options and onboarding page
-	async toggleErrorReporting(enabled: boolean): Promise<void> {
-		Sentry.getCurrentHub().getClient().getOptions().enabled = enabled;
-		await errorReportingEnabled.set(enabled);
-	}
-
 	private attachInstallHook() {
 		browser.runtime.onInstalled.addListener(async (details) => {
 			await installReason.set(details.reason);
@@ -132,27 +123,6 @@ export class BackgroundScript {
 			}
 			browser.tabs.create({ url: 'get-started/index.html', active: true });
 		});
-	}
-
-	private attachRequestHook() {
-		browser.webRequest.onSendHeaders.addListener(
-			(details) => {
-				log(`request ${details.url} from tab ${details.tabId}`);
-				log(`headers`, details.requestHeaders);
-				const userAuth = getUserAuth(details);
-				if (userAuth) {
-					log('recorded user auth request', userAuth);
-					this.authRecorded = true;
-					sendMessage({
-						type: EventType.AuthRecorded,
-						keyId: userAuth.key,
-						headers: userAuth.headers,
-					} as AuthRecordedEvent);
-				}
-			},
-			{ urls: ['*://*.youtube.com/youtubei/v1/*'], types: ['xmlhttprequest'] },
-			['requestHeaders'],
-		);
 	}
 
 	private async onVideoViewedEvent(message: VideoViewedEvent, tabId: number) {
@@ -266,18 +236,6 @@ export class BackgroundScript {
 }
 
 (window as any).bg = new BackgroundScript();
-
-function getUserAuth(details: OnBeforeSendHeadersDetailsType): { key: string; headers: Record<string, string> } | void {
-	const url = new URL(details.url);
-	const key = url.searchParams.get('key');
-	if (key) {
-		const headers = Object.fromEntries(details.requestHeaders.map((h) => [h.name, h.value]));
-		const hasAuth = 'Authorization' in headers;
-		if (hasAuth) {
-			return { key, headers };
-		}
-	}
-}
 
 function recordVideoData(data: Partial<VideoData>): string {
 	const videoDataId = uuid();

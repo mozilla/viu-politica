@@ -14,8 +14,7 @@
 	  "*://*.youtube.com/*",
 	  "https://incoming.telemetry.mozilla.org/*",
 	  "storage",
-	  "alarms",
-	  "webRequest"
+	  "alarms"
 	],
 	"options_ui": {
 		"chrome_style": false,
@@ -39,7 +38,6 @@
 	}
   ],
   "web_accessible_resources": [
-	"debug/index.html",
 	"get-started/index.html",
 	"content/content.css"
   ]
