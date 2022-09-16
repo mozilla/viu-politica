@@ -41,11 +41,7 @@ export type RegretDetailsSubmittedEvent = {
 	feedbackText: string;
 };
 
-export type Message =
-	| VideoBatchRecordedEvent
-	| RegretVideoEvent
-	| VideoViewedEvent
-	| RegretDetailsSubmittedEvent;
+export type Message = VideoBatchRecordedEvent | RegretVideoEvent | VideoViewedEvent | RegretDetailsSubmittedEvent;
 
 export type PagePingEvent = {
 	type: 'ping';
