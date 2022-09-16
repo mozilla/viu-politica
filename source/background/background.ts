@@ -80,6 +80,7 @@ export class BackgroundScript {
 			serverEndpoint: process.env.TELEMETRY_SERVER,
 			appBuild: process.env.EXTENSION_VERSION,
 			appDisplayVersion: process.env.EXTENSION_VERSION,
+			channel: process.env.GLEAN_CHANNEL,
 		});
 
 		Glean.setLogPings(loggingOn);
