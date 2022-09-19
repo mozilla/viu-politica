@@ -1,6 +1,6 @@
 # Tire suas dúvidas
 
-### 1) Quando eu marco que vídeo tem política, que dados vocês coletam?\
+### 1) Quando eu marco que vídeo tem política, que dados vocês coletam?
 
 Quando você marca que um vídeo tem política, a extensão Viu Política coleta o link do vídeo marcado, o link dos vídeos recomendados, e só.
 
