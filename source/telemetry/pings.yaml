@@ -5,12 +5,13 @@ main-events:
   description: A ping to record various extension events
   include_client_id: true
   notification_emails: &notification_emails
-    - jessed@mozillafoundation.org
-    - brandi@mozillafoundation.org
+    - chico@mozillafoundation.org
+    - viupolitica@gmail.com
   bugs: &bugs
-    - https://bugzilla.mozilla.org/show_bug.cgi?id=1740483
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1783726
+    - https://bugzilla.mozilla.org/show_bug.cgi?id=1790478
   data_reviews: &data_review
-    - https://github.com/mozilla-extensions/regrets-reporter/issues/24
+    - https://github.com/evoluchico/viu-politica/blob/main/data_review.md
 regret-details:
   description: Ping sent once a user submits regret feedback details
   include_client_id: true

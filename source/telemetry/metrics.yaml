@@ -11,13 +11,14 @@ main:
         description: Count of unique videos played
         type: quantity
     notification_emails: &notification_emails
-      - jessed@mozillafoundation.org
-      - brandi@mozillafoundation.org
+      - chico@mozillafoundation.org
+      - viupolitica@gmail.com
     bugs: &bugs
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1740483
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1783726
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1790478
     data_reviews: &data_review
-      - https://github.com/mozilla-extensions/regrets-reporter/issues/24
-    expires: &expires 2022-12-03
+      - https://github.com/evoluchico/viu-politica/blob/main/data_review.md
+    expires: &expires 2023-12-03
   regret_action:
     type: event
     description: Event sent on injected regret button clicks
