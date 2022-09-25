@@ -11,7 +11,7 @@ main-events:
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1783726
     - https://bugzilla.mozilla.org/show_bug.cgi?id=1790478
   data_reviews: &data_review
-    - https://github.com/evoluchico/viu-politica/blob/main/data_review.md
+    - https://github.com/mozilla/viu-politica/blob/main/data_review.md
 regret-details:
   description: Ping sent once a user submits regret feedback details
   include_client_id: true
