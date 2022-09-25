@@ -14,5 +14,5 @@ The Viu Politica extension helps the Mozilla Foundation, the University of Exete
 
 ## Releases
 
-This extension is being automatically built and bundled into an unsigned XPI using the [Github CI](https://github.com/adelsz/regrets-reporter/blob/master/.github/workflows/release.yml).
-You can download such builds in the [releases](https://github.com/adelsz/regrets-reporter/releases) section.
+This extension is being automatically built and bundled into an unsigned XPI using the [Github CI](https://github.com/mozilla/viu-politica/blob/master/.github/workflows/release.yml).
+You can download such builds in the [releases](https://github.com/mozilla/viu-politica/releases) section.
