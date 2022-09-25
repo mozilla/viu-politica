@@ -17,7 +17,7 @@ main:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1783726
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1790478
     data_reviews: &data_review
-      - https://github.com/evoluchico/viu-politica/blob/main/data_review.md
+      - https://github.com/mozilla/viu-politica/blob/main/data_review.md
     expires: &expires 2023-12-03
   regret_action:
     type: event
