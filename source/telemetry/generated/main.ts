@@ -12,6 +12,7 @@ import EventMetricType from "@mozilla/glean/private/metrics/event";
  * Generated from `main.video_played`.
  */
 export const videoPlayed = new EventMetricType<{
+    page_view_id?: string,
     videos_played?: number,
 }>({
     category: "main",
@@ -19,7 +20,7 @@ export const videoPlayed = new EventMetricType<{
     sendInPings: ["main-events"],
     lifetime: "ping",
     disabled: false,
-}, ["videos_played"]);
+}, ["page_view_id", "videos_played"]);
 
 /**
  * Event sent on injected regret button clicks

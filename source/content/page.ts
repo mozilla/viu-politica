@@ -23,8 +23,11 @@ const seenVideosOnPage = new Set();
 
 let lastViewedVideo: string | null = null;
 
+let pageViewId: string | undefined = undefined;
+
 function postMessage(message: any) {
-	window.postMessage(message, window.location.origin);
+	const messageToSend = { ...message, pageViewId };
+	window.postMessage(messageToSend, window.location.origin);
 }
 
 function log(...args) {
@@ -138,7 +141,7 @@ function listenForMessages() {
 		if (!isSameOrigin || !isPollEvent) {
 			return;
 		}
-		onPollEvent();
+		onPollEvent(e.data.pageViewId);
 	});
 }
 
@@ -177,7 +180,8 @@ function parseMainVideoData(): ProcessedVideoData | void {
 	return { id, title, length, views, channel, tokens, seenAt, description };
 }
 
-function onPollEvent() {
+function onPollEvent(pvid: string) {
+	pageViewId = pvid;
 	parseVideosOnPage();
 }
 

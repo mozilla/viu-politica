@@ -20,12 +20,14 @@ export enum VideoThumbnailType {
 export type VideoViewedEvent = {
 	type: EventType.VideoViewed;
 	data: ProcessedVideoData;
+	pageViewId: string;
 };
 
 export type VideoBatchRecordedEvent = {
 	type: EventType.VideoBatchRecorded;
 	batchType: VideoThumbnailType;
 	data: ProcessedVideoData[];
+	pageViewId: string;
 };
 
 export type RegretVideoEvent = {
@@ -33,16 +35,19 @@ export type RegretVideoEvent = {
 	videoId: string;
 	// TODO(revisit)
 	triggerOnboarding?: boolean;
+	pageViewId: string;
 };
 
 export type RegretDetailsSubmittedEvent = {
 	type: EventType.RegretDetailsSubmitted;
 	videoId: string;
 	feedbackText: string;
+	pageViewId: string;
 };
 
 export type Message = VideoBatchRecordedEvent | RegretVideoEvent | VideoViewedEvent | RegretDetailsSubmittedEvent;
 
 export type PagePingEvent = {
 	type: 'ping';
+	pageViewId: string;
 };

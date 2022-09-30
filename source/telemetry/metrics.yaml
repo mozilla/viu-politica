@@ -7,6 +7,9 @@ main:
     description: Event sent on video plays
     send_in_pings: [main-events]
     extra_keys:
+      page_view_id: &page_view_id
+        description: Uniquely generated id identifying a video page view
+        type: string
       videos_played:
         description: Count of unique videos played
         type: quantity
@@ -24,9 +27,7 @@ main:
     description: Event sent on injected regret button clicks
     send_in_pings: [main-events]
     extra_keys:
-      page_view_id: &page_view_id
-        description: Uniquely generated id identifying a video page view
-        type: string
+      page_view_id: *page_view_id
       video_data_id: &video_data_id
         description: Video UUID (not to be confused with YT video id)
         type: string

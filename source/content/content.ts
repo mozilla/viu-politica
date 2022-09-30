@@ -8,6 +8,7 @@ import pageScript from 'bundle-text:./page.ts';
 import { Modal } from './modal';
 import * as React from 'react';
 import { injectElements } from './button';
+import { v4 as uuid } from 'uuid';
 
 const loggingOn = process.env.ENABLE_CONTENT_LOGS === 'true';
 
@@ -16,6 +17,14 @@ export function log(...args) {
 		console.log('[content]', ...args);
 	}
 }
+
+let lastLocationPathname: string | null = null;
+
+function generatePageViewId(videoId = 'null') {
+	return `${videoId}-${uuid()}`;
+}
+
+let pageViewId = generatePageViewId();
 
 const pollingInterval = 2000;
 
@@ -38,11 +47,19 @@ async function injectScript() {
 	(document.head || document.documentElement).appendChild(scr);
 
 	setInterval(async () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const videoId = urlParams.get('v');
+		const currentLocation = window.location.toString();
+		if (currentLocation !== lastLocationPathname) {
+			lastLocationPathname = currentLocation;
+			pageViewId = generatePageViewId(videoId);
+		}
 		const event: PagePingEvent = {
 			type: 'ping',
+			pageViewId,
 		};
 
-		injectElements();
+		injectElements(pageViewId);
 
 		/** Send pings to injected script to parse page videos and inject buttons */
 		window.postMessage(event, window.location.origin);

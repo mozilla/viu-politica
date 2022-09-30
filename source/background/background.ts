@@ -58,7 +58,6 @@ export class BackgroundScript {
 
 	authRecorded = false;
 	events: Array<ProcessedEvent> = [];
-	videoTokens: Record<string, { notInterested: string }> = {};
 	videoIndex: Record<string, ProcessedVideoData> = {};
 
 	private async asyncConstructor() {
@@ -139,7 +138,7 @@ export class BackgroundScript {
 			...message.data,
 		};
 		await this.pushEvent(EventType.VideoViewed, 'VideoViewed' as any, tabId, message.data);
-		telemetryEvents.videoPlayed.record({ videos_played: playedVideoCount });
+		telemetryEvents.videoPlayed.record({ videos_played: playedVideoCount, page_view_id: message.pageViewId });
 	}
 
 	private attachMessageListener() {
@@ -175,6 +174,7 @@ export class BackgroundScript {
 		return this.pushEvent(EventType.RegretDetailsSubmitted, 'RegretDetailsSubmitted', tabId, {
 			videoId: message.videoId,
 			feedbackText: message.feedbackText,
+			page_view_id: message.pageViewId,
 		});
 	}
 
@@ -190,7 +190,10 @@ export class BackgroundScript {
 		const video = this.videoIndex[message.videoId] as ProcessedVideoData | undefined;
 
 		const videoDataId = recordVideoData(video ? video : { id: message.videoId });
-		telemetryEvents.regretAction.record({ video_data_id: videoDataId });
+		telemetryEvents.regretAction.record({
+			video_data_id: videoDataId,
+			page_view_id: message.pageViewId,
+		});
 		mainEventsPing.submit();
 		await this.pushEvent(EventType.VideoRegretted, null, tabId, video);
 	}
@@ -202,15 +205,12 @@ export class BackgroundScript {
 				tabId,
 				...videoData,
 			};
-			this.videoTokens[videoData.id] = {
-				...this.videoTokens[videoData.id],
-				...videoData.tokens,
-			};
 			await this.pushEvent(EventType.VideoBatchRecorded, message.batchType, tabId, videoData);
 			const videoDataId = recordVideoData(videoData);
 			telemetryEvents.videoRecommended.record({
 				video_data_id: videoDataId,
 				recommendation_type: message.batchType,
+				page_view_id: message.pageViewId,
 			});
 		}
 		mainEventsPing.submit();

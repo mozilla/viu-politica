@@ -14,6 +14,8 @@ enum PageLocation {
 /** A set of video ids reported, lives as long as the page itself */
 const videoIdsReported = new Set<string>();
 
+let pageViewId: string | undefined;
+
 function getPageLocation(): PageLocation {
 	const { pathname } = window.location;
 	switch (pathname) {
@@ -31,11 +33,12 @@ function getPageLocation(): PageLocation {
 }
 
 function postMessage(message: any) {
-	if (message.type === EventType.VideoBatchRecorded && message.data.length === 0) {
+	const messageToSend = { ...message, pageViewId };
+	if (messageToSend.type === EventType.VideoBatchRecorded && messageToSend.data.length === 0) {
 		return;
 	}
 
-	browser.runtime.sendMessage(message);
+	browser.runtime.sendMessage(messageToSend);
 }
 
 function isElementVisible(el: Element): boolean {
@@ -123,13 +126,8 @@ function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) 
 			label.innerText = 'Submitted';
 			btn.classList.add('visible', 'submitted');
 			postMessage({ type: EventType.RegretVideo, videoId, triggerOnboarding: false } as RegretVideoEvent);
-			// TODO(revisit)
-			if (true) {
-				onSubmitted();
-				onModalOpen(videoId);
-			} else {
-				setTimeout(onSubmitted, 1000);
-			}
+			onSubmitted();
+			onModalOpen(videoId);
 			return;
 		}
 		if (state === 'submitted') {
@@ -166,7 +164,8 @@ export function setButtonToFinalState(videoId: string, node?: Element) {
 	button.onclick = undefined;
 }
 
-export function injectElements() {
+export function injectElements(pvid: string) {
+	pageViewId = pvid;
 	const pageLocation = getPageLocation();
 	const enabled = pageLocation === PageLocation.Watch || pageLocation === PageLocation.Home;
 
