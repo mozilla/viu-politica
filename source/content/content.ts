@@ -1,7 +1,5 @@
 import { browser } from 'webextension-polyfill-ts';
 import { EventType, Message, PagePingEvent } from '../common/messages';
-import { get } from 'object-path';
-
 import * as ReactDOM from 'react-dom';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -18,9 +16,6 @@ export function log(...args) {
 		console.log('[content]', ...args);
 	}
 }
-
-let ytApiKey = null;
-let ytRequestHeaders = null;
 
 const pollingInterval = 2000;
 
@@ -71,16 +66,6 @@ const onPageMessage = (event: MessageEvent) => {
 
 	browser.runtime.sendMessage(message);
 };
-
-/** Handle message from background script */
-browser.runtime.onMessage.addListener(async (message: Message) => {
-	log('got runtime message:', message);
-	if (message.type === EventType.AuthRecorded) {
-		log(`auth ${message.keyId}`);
-		ytApiKey = message.keyId;
-		ytRequestHeaders = message.headers;
-	}
-});
 
 function appendFeedbackModal() {
 	const div = document.createElement('div');
