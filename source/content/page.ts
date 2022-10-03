@@ -185,7 +185,5 @@ function onPollEvent(pvid: string) {
 	parseVideosOnPage();
 }
 
-export default function () {
-	log('inject scrapping script');
-	listenForMessages();
-}
+log('inject scrapping script');
+listenForMessages();

@@ -4,7 +4,6 @@ import * as ReactDOM from 'react-dom';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import pageScript from 'bundle-text:./page.ts';
 import { Modal } from './modal';
 import * as React from 'react';
 import { injectElements } from './button';
@@ -31,19 +30,7 @@ const pollingInterval = 2000;
 /** Injects page.ts as a script into the YT page DOM. Needed to allow direct DOM access. */
 async function injectScript() {
 	const scr = document.createElement('script');
-	scr.textContent = `(function () {
-		function define(m) {
-				console.log("[page loader] page module defined");
-				// run default export
-				if (typeof m === 'function') {
-					const module = m();
-					module.default();
-				}
-		}
-		define.amd = true;
-		${pageScript}
-	})();`;
-
+	scr.src = browser.runtime.getURL('content/page.js');
 	(document.head || document.documentElement).appendChild(scr);
 
 	setInterval(async () => {

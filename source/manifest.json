@@ -1,6 +1,6 @@
 {
 	"name": "Viu Política!",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "Ao instalar esta extensão, você está ajudando a Mozilla Foundation, a Universidade de Exeter, e o Instituto Vero a entender o conteúdo político espalhado pelo YouTube em 2022.",
 	"homepage_url": "https://github.com/mozilla/viu-politica",
 	"manifest_version": 2,
@@ -11,13 +11,10 @@
 	  "16": "assets/icon/extension-icon-16x16.png"
 	},
 	"permissions": [
-	  "*://*.youtube.com/*",
-	  "https://incoming.telemetry.mozilla.org/*",
 	  "storage",
 	  "alarms"
 	],
 	"options_ui": {
-		"chrome_style": false,
 		"browser_style": false,
 		"page": "options/options.html"
 	},
@@ -39,6 +36,7 @@
   ],
   "web_accessible_resources": [
 	"get-started/index.html",
-	"content/content.css"
+	"content/content.css",
+	"content/page.ts"
   ]
 }

@@ -23,7 +23,7 @@ import {
 } from '../telemetry/generated/pings';
 
 // inject browser polyfill into global scope
-(window as any).browser = browser;
+globalThis.browser = browser;
 
 import MessageSender = Runtime.MessageSender;
 import { onboardingUrl } from '../common/links';
@@ -236,7 +236,7 @@ export class BackgroundScript {
 	}
 }
 
-(window as any).bg = new BackgroundScript();
+globalThis.bg = new BackgroundScript();
 
 function recordVideoData(data: Partial<VideoData>): string {
 	const videoDataId = uuid();

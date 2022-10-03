@@ -41,7 +41,7 @@ export const useAsync = <T, E = string>(asyncFunction: () => Promise<T>, immedia
 
 export async function getBackgroundScript(): Promise<BackgroundScript> {
 	const bgPage = (await browser.runtime.getBackgroundPage()) as any;
-	return bgPage.window.bg;
+	return bgPage.bg;
 }
 
 declare let content: {
