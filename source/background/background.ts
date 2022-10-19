@@ -56,8 +56,6 @@ export class BackgroundScript {
 		this.asyncConstructor();
 	}
 
-	authRecorded = false;
-	events: Array<ProcessedEvent> = [];
 	videoIndex: Record<string, ProcessedVideoData> = {};
 
 	private async asyncConstructor() {
@@ -137,7 +135,6 @@ export class BackgroundScript {
 			tabId,
 			...message.data,
 		};
-		await this.pushEvent(EventType.VideoViewed, 'VideoViewed' as any, tabId, message.data);
 		telemetryEvents.videoPlayed.record({ videos_played: playedVideoCount, page_view_id: message.pageViewId });
 	}
 
@@ -173,11 +170,6 @@ export class BackgroundScript {
 		regretDetails.regretId.set(message.regretId);
 		regretDetails.pageViewId.set(message.pageViewId);
 		regretDetailsPing.submit();
-		return this.pushEvent(EventType.RegretDetailsSubmitted, 'RegretDetailsSubmitted', tabId, {
-			videoId: message.videoId,
-			feedbackText: message.feedbackText,
-			page_view_id: message.pageViewId,
-		});
 	}
 
 	private async onRegretVideoEvent(message: RegretVideoEvent, tabId: number) {
@@ -198,7 +190,6 @@ export class BackgroundScript {
 			regret_id: message.regretId,
 		});
 		mainEventsPing.submit();
-		await this.pushEvent(EventType.VideoRegretted, null, tabId, video);
 	}
 
 	private async onVideoBatchRecorded(message: VideoBatchRecordedEvent, tabId: number) {
@@ -208,7 +199,6 @@ export class BackgroundScript {
 				tabId,
 				...videoData,
 			};
-			await this.pushEvent(EventType.VideoBatchRecorded, message.batchType, tabId, videoData);
 			const videoDataId = recordVideoData(videoData);
 			telemetryEvents.videoRecommended.record({
 				video_data_id: videoDataId,
@@ -224,18 +214,6 @@ export class BackgroundScript {
 		const playedVideos = await videosPlayedSet.acquire();
 		const playedVideoCount = Object.keys(playedVideos).length;
 		return playedVideoCount;
-	}
-
-	async pushEvent(type: EventType, subtype: any, tabId: number, payload: any) {
-		this.events.unshift({
-			id: uuid(),
-			timestamp: new Date(),
-			counter: await this.getUniquePlayedVideosCount(),
-			type,
-			tabId,
-			subtype,
-			payload,
-		});
 	}
 }
 
