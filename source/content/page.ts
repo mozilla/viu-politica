@@ -82,23 +82,6 @@ function parseVideosOnPage() {
 	}
 
 	{
-		const domNodes = Array.from(document.getElementsByTagName('ytd-rich-item-renderer'));
-		const data = domNodes
-			.map((d) => (d as any).__data.data.content.videoRenderer as Data)
-			.filter((d) => !!d)
-			.map(processVideo)
-			.filter((v) => v !== null);
-		log('scrapping new "explore" videoIndex', data);
-		if (data.length > 0) {
-			postMessage({
-				type: EventType.VideoBatchRecorded,
-				batchType: VideoThumbnailType.HomePageRecommendation,
-				data,
-			} as VideoBatchRecordedEvent);
-		}
-	}
-
-	{
 		const domNodes = Array.from(document.getElementsByTagName('ytd-compact-video-renderer'));
 		const data = domNodes
 			.map((d) => (d as any).__data.data as Data)
