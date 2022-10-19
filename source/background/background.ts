@@ -170,6 +170,8 @@ export class BackgroundScript {
 		const videoDataId = recordVideoData(video ? video : { id: message.videoId });
 		regretDetails.videoDataId.set(videoDataId);
 		regretDetails.feedbackText.set(message.feedbackText);
+		regretDetails.regretId.set(message.regretId);
+		regretDetails.pageViewId.set(message.pageViewId);
 		regretDetailsPing.submit();
 		return this.pushEvent(EventType.RegretDetailsSubmitted, 'RegretDetailsSubmitted', tabId, {
 			videoId: message.videoId,
@@ -193,6 +195,7 @@ export class BackgroundScript {
 		telemetryEvents.regretAction.record({
 			video_data_id: videoDataId,
 			page_view_id: message.pageViewId,
+			regret_id: message.regretId,
 		});
 		mainEventsPing.submit();
 		await this.pushEvent(EventType.VideoRegretted, null, tabId, video);

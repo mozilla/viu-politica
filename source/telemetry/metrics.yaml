@@ -28,6 +28,9 @@ main:
     send_in_pings: [main-events]
     extra_keys:
       page_view_id: *page_view_id
+      regret_id: &regret_id
+        description: Regret Id (matches regret id in the regret action event)
+        type: string
       video_data_id: &video_data_id
         description: Video UUID (not to be confused with YT video id)
         type: string
@@ -126,9 +129,25 @@ video_data:
     data_reviews: *data_review
     expires: *expires
 regret_details:
+  regret_id:
+    type: string
+    description: Regret Id (matches the regret id in the regret action event)
+    send_in_pings: [regret-details]
+    notification_emails: *notification_emails
+    bugs: *bugs
+    data_reviews: *data_review
+    expires: *expires
   video_data_id:
     type: string
     description: Video UUID (not to be confused with YT video id)
+    send_in_pings: [regret-details]
+    notification_emails: *notification_emails
+    bugs: *bugs
+    data_reviews: *data_review
+    expires: *expires
+  page_view_id:
+    type: string
+    description: Uniquely generated id identifying a video page view
     send_in_pings: [regret-details]
     notification_emails: *notification_emails
     bugs: *bugs

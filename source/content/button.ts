@@ -2,6 +2,7 @@ import { EventType, RegretVideoEvent } from '../common/messages';
 import { log } from './content';
 import { browser } from 'webextension-polyfill-ts';
 import { onModalOpen } from './modal';
+import { v4 as uuid } from 'uuid';
 
 enum PageLocation {
 	Home,
@@ -121,13 +122,14 @@ function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) 
 		label.innerText = 'Conte-nos mais';
 	};
 
+	const regretId = uuid();
 	btn.onclick = async function () {
 		if (state === 'none') {
 			label.innerText = 'Submitted';
 			btn.classList.add('visible', 'submitted');
-			postMessage({ type: EventType.RegretVideo, videoId, triggerOnboarding: false } as RegretVideoEvent);
+			postMessage({ type: EventType.RegretVideo, videoId, triggerOnboarding: false, regretId } as RegretVideoEvent);
 			onSubmitted();
-			onModalOpen(videoId);
+			onModalOpen(videoId, pageViewId, regretId);
 			return;
 		}
 		if (state === 'submitted') {
@@ -135,7 +137,7 @@ function injectButton(parentNode: HTMLElement, getVideoId: () => string | void) 
 			return;
 		}
 		if (state === 'tell-more') {
-			onModalOpen(videoId);
+			onModalOpen(videoId, pageViewId, regretId);
 			return;
 		}
 	};

@@ -1,20 +1,29 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { EventType, Message, RegretDetailsSubmittedEvent } from '../common/messages';
+import { EventType, RegretDetailsSubmittedEvent } from '../common/messages';
 import { setButtonToFinalState } from './button';
 import { browser } from 'webextension-polyfill-ts';
 
-export let onModalOpen: null | ((videoId: string) => void) = null;
-const subscribeToModalOpenEvent = (fn: (videoId: string) => void) => {
+type ModalOpenHandler = (videoId: string, pageViewId: string, regretId: string) => void;
+export let onModalOpen: null | ModalOpenHandler = null;
+const subscribeToModalOpenEvent = (fn: ModalOpenHandler) => {
 	onModalOpen = fn;
 };
 
 function useModalState() {
 	const [isSubmitted, updateSubmitted] = useState(false);
 	const [videoId, updateVideoId] = useState<string | null>(null);
+	const [pageViewId, updatePageViewId] = useState<string | null>(null);
+	const [regretId, updateRegretId] = useState<string | null>(null);
 	const [feedbackText, setFeedbackText] = useState<string>('');
 	const submit = useCallback(() => {
-		const message: RegretDetailsSubmittedEvent = { type: EventType.RegretDetailsSubmitted, videoId, feedbackText };
+		const message: RegretDetailsSubmittedEvent = {
+			type: EventType.RegretDetailsSubmitted,
+			videoId,
+			feedbackText,
+			pageViewId,
+			regretId,
+		};
 		browser.runtime.sendMessage(message);
 		setButtonToFinalState(videoId);
 		updateSubmitted(true);
@@ -23,6 +32,8 @@ function useModalState() {
 	return {
 		isSubmitted,
 		updateSubmitted,
+		updatePageViewId,
+		updateRegretId,
 		videoId,
 		updateVideoId,
 		feedbackText,
@@ -33,8 +44,17 @@ function useModalState() {
 
 export function Modal() {
 	const [isVisible, updateVisible] = useState(false);
-	const { isSubmitted, updateSubmitted, videoId, updateVideoId, feedbackText, setFeedbackText, submit } =
-		useModalState();
+	const {
+		isSubmitted,
+		updateSubmitted,
+		videoId,
+		updateVideoId,
+		feedbackText,
+		setFeedbackText,
+		submit,
+		updateRegretId,
+		updatePageViewId,
+	} = useModalState();
 
 	const feedbackTextEmpty = feedbackText.length === 0;
 
@@ -44,10 +64,12 @@ export function Modal() {
 	}, [videoId]);
 
 	useEffect(() => {
-		async function handler(videoId: string) {
+		const handler: ModalOpenHandler = async (videoId, pageViewId, regretId) => {
 			updateVisible(true);
 			updateVideoId(videoId);
-		}
+			updatePageViewId(pageViewId);
+			updateRegretId(regretId);
+		};
 		subscribeToModalOpenEvent(handler);
 	}, []);
 

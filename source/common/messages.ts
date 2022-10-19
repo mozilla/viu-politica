@@ -32,6 +32,7 @@ export type VideoBatchRecordedEvent = {
 
 export type RegretVideoEvent = {
 	type: EventType.RegretVideo;
+	regretId: string;
 	videoId: string;
 	// TODO(revisit)
 	triggerOnboarding?: boolean;
@@ -43,6 +44,7 @@ export type RegretDetailsSubmittedEvent = {
 	videoId: string;
 	feedbackText: string;
 	pageViewId: string;
+	regretId: string;
 };
 
 export type Message = VideoBatchRecordedEvent | RegretVideoEvent | VideoViewedEvent | RegretDetailsSubmittedEvent;

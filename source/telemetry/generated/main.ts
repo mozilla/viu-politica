@@ -29,6 +29,7 @@ export const videoPlayed = new EventMetricType<{
  */
 export const regretAction = new EventMetricType<{
     page_view_id?: string,
+    regret_id?: string,
     video_data_id?: string,
 }>({
     category: "main",
@@ -36,7 +37,7 @@ export const regretAction = new EventMetricType<{
     sendInPings: ["main-events"],
     lifetime: "ping",
     disabled: false,
-}, ["page_view_id", "video_data_id"]);
+}, ["page_view_id", "regret_id", "video_data_id"]);
 
 /**
  * Event sent on YT video recommendation capture
