@@ -1,42 +1,59 @@
 {
-	"name": "Viu Política!",
-	"version": "0.0.8",
-	"description": "Ao instalar esta extensão, você está ajudando a Mozilla Foundation, a Universidade de Exeter, e o Instituto Vero a entender o conteúdo político espalhado pelo YouTube em 2022.",
-	"homepage_url": "https://github.com/mozilla/viu-politica",
-	"manifest_version": 2,
-	"minimum_chrome_version": "74",
-	"incognito": "not_allowed",
-	"icons": {
-	  "128": "assets/icon/extension-icon-128x128.png",
-	  "16": "assets/icon/extension-icon-16x16.png"
-	},
-	"permissions": [
-	  "storage",
-	  "alarms"
-	],
-	"options_ui": {
-		"browser_style": false,
-		"page": "options/options.html"
-	},
-	"background": {
-		"scripts": [
-			"background/background.ts"
-		]
-	},
-  "browser_action": {
-	"default_icon": "assets/icon/extension-icon-46x46.png",
-	"default_title": "Viu Política!",
-	"default_popup": "popup/index.html"
+  "name": "Viu Política!",
+  "version": "0.0.8",
+  "description": "Com esta extensão, você ajuda a Mozilla, a Universidade de Exeter, e o Instituto Vero a entender o conteúdo político no YouTube.",
+  "homepage_url": "https://github.com/mozilla/viu-politica",
+  "manifest_version": 3,
+  "minimum_chrome_version": "88",
+  "incognito": "not_allowed",
+  "icons": {
+    "16": "/assets/icon/extension-icon-16x16.png",
+    "128": "/assets/icon/extension-icon-128x128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "options_ui": {
+    "browser_style": false,
+    "page": "/options/options.html"
+  },
+  "background": {
+    "service_worker": "/background/background.js",
+    "type": "module"
   },
   "content_scripts": [
-	{
-	  "matches": ["*://*.youtube.com/*"],
-	  "js": ["content/content.ts"]
-	}
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "/content/content.js"
+      ]
+    }
   ],
   "web_accessible_resources": [
-	"get-started/index.html",
-	"content/content.css",
-	"content/page.ts"
-  ]
+    {
+      "resources": [
+        "/content/content.css",
+        "/content/page.js",
+        "*.woff",
+        "*.woff2"
+      ],
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "extensionIds": [
+        "*"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "https://incoming.telemetry.mozilla.org/*"
+  ],
+  "action": {
+    "default_icon": "/assets/icon/extension-icon-46x46.png",
+    "default_title": "Viu Política!",
+    "default_popup": "/popup/index.html"
+  }
 }
