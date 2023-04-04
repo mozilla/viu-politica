@@ -9,11 +9,11 @@ export function Main() {
 				aqui
 			</a>
 			{'.'}
-			&nbsp;Se você tiver alguma pergunta, manda um{' '}
+			&nbsp;Se você tiver alguma pergunta, manda um email pra gente no{' '}
 			<a href="mailto:viupolitica@gmail.com" target="_blank" rel="nofollow noreferrer" className="text-blue-60">
 				viupolitica@gmail.com
-			</a>{' '}
-			pra gente. Obrigado por participar!
+			</a>
+			. Obrigado por participar!
 		</div>
 	);
 }
